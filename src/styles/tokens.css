@@ -1,0 +1,115 @@
+/* ─── Brand Palette ─────────────────────────────────────────────── */
+:root {
+  /* Core identity */
+  --color-cream:         #F5F0E8;
+  --color-cream-dark:    #E8E0CF;
+  --color-railway-green: #1A3A2A;
+  --color-railway-red:   #C0392B;
+  --color-warm-yellow:   #F4C430;
+  --color-metal-grey:    #5C6370;
+  --color-metal-light:   #8A929E;
+  --color-black-true:    #0A0A0A;
+
+  /* Text */
+  --color-text-primary:  #1A1A1A;
+  --color-text-muted:    #6B7280;
+  --color-text-inverse:  #F5F0E8;
+
+  /* ─── Environment Sky (animated per station by GSAP) ────────── */
+  --sky-top:             #4A90C8;
+  --sky-bottom:          #87CEEB;
+  --horizon-glow:        transparent;
+  --ground-color:        #5C7A3A;
+  --track-bed-color:     #8B7355;
+
+  /* ─── Lighting State (0–1 range, GSAP-tweened) ──────────────── */
+  --ambient-intensity:   1;
+  --building-opacity:    1;
+  --window-glow:         0;
+  --fog-opacity:         0;
+  --cloud-opacity:       0.7;
+  --sun-angle:           45deg;
+
+  /* ─── Train State ────────────────────────────────────────────── */
+  --headlight-intensity:             0;
+  --smoke-opacity:                   0;
+  --wheel-animation-play-state:      paused;
+
+  /* ─── Environment Transition Duration ───────────────────────── */
+  --transition-env: 2s;
+
+  /* ─── Typography ─────────────────────────────────────────────── */
+  --font-railway:  var(--font-rajdhani), 'Rajdhani', system-ui, sans-serif;
+  --font-mono:     var(--font-jetbrains), 'JetBrains Mono', monospace;
+  --font-display:  var(--font-oswald), 'Oswald', var(--font-railway);
+
+  /* ─── UI Panels ──────────────────────────────────────────────── */
+  --panel-bg:      rgba(10, 10, 10, 0.85);
+  --panel-border:  rgba(244, 196, 48, 0.25);
+  --panel-radius:  4px;
+
+  /* ─── Z-index scale ──────────────────────────────────────────── */
+  --z-world:       1;
+  --z-train:       10;
+  --z-ui:          100;
+  --z-overlay:     200;
+  --z-modal:       250;
+  --z-loading:     500;
+}
+
+/* ─── Reference values per time-of-day (applied programmatically via GSAP) ── */
+
+[data-time="day"] {
+  --sky-top:             #4A90C8;
+  --sky-bottom:          #87CEEB;
+  --ground-color:        #5C7A3A;
+  --ambient-intensity:   1;
+  --cloud-opacity:       0.7;
+  --fog-opacity:         0;
+  --window-glow:         0;
+  --headlight-intensity: 0;
+}
+
+[data-time="evening"] {
+  --sky-top:             #C0703A;
+  --sky-bottom:          #E8A870;
+  --ground-color:        #3A5526;
+  --ambient-intensity:   0.8;
+  --cloud-opacity:       0.6;
+  --fog-opacity:         0.05;
+  --window-glow:         0.1;
+  --headlight-intensity: 0;
+}
+
+[data-time="sunset"] {
+  --sky-top:             #6B2D5E;
+  --sky-bottom:          #D4603A;
+  --ground-color:        #2C3E20;
+  --ambient-intensity:   0.65;
+  --cloud-opacity:       0.4;
+  --fog-opacity:         0.08;
+  --window-glow:         0.5;
+  --headlight-intensity: 0.3;
+}
+
+[data-time="night"] {
+  --sky-top:             #080C1A;
+  --sky-bottom:          #0D1A2E;
+  --ground-color:        #1A2210;
+  --ambient-intensity:   0.3;
+  --cloud-opacity:       0.15;
+  --fog-opacity:         0.15;
+  --window-glow:         1;
+  --headlight-intensity: 1;
+}
+
+[data-time="sunrise"] {
+  --sky-top:             #1A3A6E;
+  --sky-bottom:          #F4A04A;
+  --ground-color:        #3A5020;
+  --ambient-intensity:   0.75;
+  --cloud-opacity:       0.45;
+  --fog-opacity:         0.05;
+  --window-glow:         0.3;
+  --headlight-intensity: 0.2;
+}

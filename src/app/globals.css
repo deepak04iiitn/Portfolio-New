@@ -1,0 +1,96 @@
+@import "../styles/tokens.css";
+@import "tailwindcss";
+
+/* ─── Base reset ─────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  overflow: hidden;   /* World scrolls internally — not the page */
+  height: 100%;
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-railway);
+  color: var(--color-text-primary);
+  background: var(--sky-bottom);
+}
+
+/* ─── Screen-reader only utility ────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ─── Focus ring ─────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-warm-yellow);
+  outline-offset: 3px;
+}
+
+/* ─── Scrollbar — hidden on main viewport ───────────────────── */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* ─── Grain keyframe (used by FilmGrain component) ───────────── */
+@keyframes grain-shift {
+  0%  { transform: translate(0, 0); }
+  10% { transform: translate(-2%, -3%); }
+  20% { transform: translate(3%, 1%); }
+  30% { transform: translate(-1%, 3%); }
+  40% { transform: translate(2%, -2%); }
+  50% { transform: translate(-3%, 1%); }
+  60% { transform: translate(1%, 2%); }
+  70% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, 3%); }
+  90% { transform: translate(-1%, -2%); }
+}
+
+/* ─── Scrollable content inside station overlays ────────────── */
+.station-content-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(244, 196, 48, 0.2) transparent;
+}
+
+.station-content-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.station-content-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.station-content-scroll::-webkit-scrollbar-thumb {
+  background: rgba(244, 196, 48, 0.2);
+  border-radius: 2px;
+}
+
+/* ─── Reduced motion — flatten all transitions ───────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
