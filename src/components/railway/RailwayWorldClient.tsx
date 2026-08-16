@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import RailwayWorld from "./RailwayWorld";
 import CabinView from "./CabinView";
+import BoardingScreen from "./BoardingScreen";
+import AudioManager from "@/components/audio/AudioManager";
+import MuteToggle from "@/components/ui/MuteToggle";
 import { useJourneyStore } from "@/hooks/useJourneyState";
 import { useTrainController } from "@/hooks/useTrainController";
 import { AnimationController } from "@/lib/railway/animationController";
@@ -54,10 +57,14 @@ export default function RailwayWorldClient() {
   const isFirst = currentStationIndex === 0;
   const isLast  = currentStationIndex === STATIONS.length - 1;
 
-  /* ── Initialise journey ───────────────────────────────────── */
+  /* ── Initialise journey ───────────────────────────────────────
+     Show the boarding screen first (LOADING → BOARDING).
+     The BoardingScreen component handles the BOARDING → IDLE
+     transition once the user clicks "BOARD THE TRAIN".
+  ─────────────────────────────────────────────────────────── */
   useEffect(() => {
     if (phase === "LOADING") {
-      setPhase("IDLE");
+      setPhase("BOARDING");
       /* Ensure world-pan starts at x=0 without an animated transition */
       if (worldRef.current) {
         gsap.set(worldRef.current, { x: 0 });
@@ -116,6 +123,12 @@ export default function RailwayWorldClient() {
 
   return (
     <>
+      {/* ── Behavioural: audio sequencer (renders nothing) ─── */}
+      <AudioManager />
+
+      {/* ── Boarding gate — shown before IDLE ────────────────── */}
+      <BoardingScreen />
+
       {/* ── Scene ───────────────────────────────────────────── */}
       <RailwayWorld
         worldRef={worldRef}
@@ -319,6 +332,9 @@ export default function RailwayWorldClient() {
             {trainState.speed} KM/H
           </span>
         </div>
+
+        {/* Mute toggle — only visible after boarding */}
+        <MuteToggle />
       </div>
 
       {/* ── Bottom navigation controls ─────────────────────────── */}
