@@ -4,15 +4,28 @@ import Platform from "./Platform";
 import type { StationConfig } from "@/lib/railway/types";
 import { STATION_SPACING } from "@/lib/railway/stations";
 
-/**
- * WORLD_OFFSET_INITIAL: The pixel offset at which Station 0 is visible
- * when the world starts at translateX(0). Stations appear to the right
- * of the train at this distance from the world origin.
+/*
+ * WORLD_INITIAL_OFFSET — screen-x where every station platform appears
+ * when the world translateX equals -(N * STATION_SPACING).
  *
- * This value represents approximately where the train's viewport-fixed
- * position falls in world space (calibrated to a ~1440px-wide viewport).
+ * We want the platform's left edge to sit just past the locomotive's
+ * right edge so the signboard is always fully visible:
+ *
+ *   train_left  = viewport_width × 0.30  (matches TRAIN_SCREEN_LEFT in RailwayWorld)
+ *   train_width = 440 × 0.95 = 418 px   (SVG width × scale)
+ *   gap         = 30 px                  (breathing room between loco and platform)
+ *
+ * Computed once at module-load time (client-side only).
+ * Falls back to 880 px (correct for a 1440 px viewport) during SSR.
  */
-export const WORLD_INITIAL_OFFSET = 500;
+const TRAIN_WIDTH_PX = Math.round(440 * 0.95); // 418
+
+function computeWorldOffset(): number {
+  if (typeof window === "undefined") return 880;
+  return Math.round(window.innerWidth * 0.30) + TRAIN_WIDTH_PX + 30;
+}
+
+export const WORLD_INITIAL_OFFSET = computeWorldOffset();
 
 interface StationWrapperProps {
   station: StationConfig;

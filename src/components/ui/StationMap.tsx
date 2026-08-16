@@ -84,7 +84,7 @@ export default function StationMap({ isOpen, onClose }: StationMapProps) {
                   fontWeight: 700,
                 }}
               >
-                JOURNEY MAP — DX-2026
+                JOURNEY MAP — DK-0402
               </span>
               <button
                 onClick={onClose}

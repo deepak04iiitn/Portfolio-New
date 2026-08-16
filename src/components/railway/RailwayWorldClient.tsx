@@ -186,7 +186,7 @@ export default function RailwayWorldClient() {
       <CabinView isOpen={cabinOpen} onClose={() => setCabinOpen(false)} />
 
       {/* ── Station content panels (shown when STOPPED) ──────── */}
-      <StationContentOverlay />
+      <StationContentOverlay isAnimating={isAnimating} />
 
       {/* ── Travel ticket (shown once on first IDLE) ─────────── */}
       <Ticket
@@ -241,7 +241,7 @@ export default function RailwayWorldClient() {
                 lineHeight: 1,
               }}
             >
-              DX-2026
+              DK-0402
             </span>
             <span
               style={{
@@ -399,7 +399,8 @@ export default function RailwayWorldClient() {
       )}
 
       {/* ── Bottom navigation controls ────────────────────────── */}
-      {phase !== "LOADING" && phase !== "BOARDING" && (
+      {/* Hidden while the station panel is open — re-appears once it closes */}
+      {phase !== "LOADING" && phase !== "BOARDING" && phase !== "STOPPED" && (
         <div
           style={{
             position: "fixed",
@@ -453,6 +454,50 @@ export default function RailwayWorldClient() {
               background: "rgba(244,196,48,0.15)",
             }}
           />
+
+          {/* INFO button — reopen station panel when it has been closed */}
+          {phase === "EXPLORE" && (
+            <button
+              onClick={() => setPhase("STOPPED")}
+              aria-label="Open station information panel"
+              style={{
+                padding: "8px 14px",
+                background: "rgba(244,196,48,0.07)",
+                border: "1px solid rgba(244,196,48,0.3)",
+                borderRadius: 2,
+                color: "#F4C430",
+                fontSize: 9,
+                letterSpacing: "2px",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+                fontFamily: "var(--font-mono)",
+                display: "flex",
+                alignItems: "center",
+                gap: 5,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(244,196,48,0.14)";
+                e.currentTarget.style.borderColor = "rgba(244,196,48,0.6)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(244,196,48,0.07)";
+                e.currentTarget.style.borderColor = "rgba(244,196,48,0.3)";
+              }}
+            >
+              ↗ INFO
+            </button>
+          )}
+
+          {/* Divider before PREV */}
+          {phase === "EXPLORE" && (
+            <div
+              style={{
+                width: 1,
+                height: 32,
+                background: "rgba(244,196,48,0.15)",
+              }}
+            />
+          )}
 
           {/* PREV button */}
           <button

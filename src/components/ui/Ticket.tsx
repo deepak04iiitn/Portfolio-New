@@ -80,7 +80,7 @@ export default function Ticket({ isVisible, onDismiss }: TicketProps) {
                 letterSpacing: "2px",
               }}
             >
-              DX-2026
+              DK-0402
             </span>
           </div>
 

@@ -72,7 +72,7 @@ export default function ControlPanel({ onOpenMap }: ControlPanelProps) {
           DEEPAK EXPRESS
         </span>
         <span style={{ fontSize: 7, color: "#3A4A3A", letterSpacing: "2px" }}>
-          DX-2026
+          DK-0402
         </span>
       </div>
 

@@ -198,10 +198,11 @@ export const PROJECTS_DATA: ProjectEntry[] = [
 ];
 
 export const SKILLS_DATA: SkillsData = {
-  languages: ["TypeScript", "JavaScript", "Python", "C++", "SQL"],
-  frameworks: ["Next.js", "React", "Node.js", "Express", "Prisma"],
-  tools: ["Git", "Docker", "PostgreSQL", "Redis", "Vercel", "Linux"],
-  concepts: ["System Design", "REST APIs", "WebSockets", "Data Structures", "CI/CD"],
+  languages:    ["C", "C++", "JavaScript", "TypeScript", "Python", "GitHub", "BrowserStack", "Appium"],
+  frontend:     ["HTML", "CSS", "Tailwind CSS", "React.js", "Next.js", "React Native", "Redux"],
+  backend:      ["Node.js", "Express.js", "REST APIs", "Webhooks", "Firebase", "MongoDB", "MySQL"],
+  genai:        ["LangChain", "LangGraph", "RAG", "Vectorless RAG", "LLM Gateway", "Guardrails"],
+  fundamentals: ["Data Structures & Algorithms", "DBMS", "Object-Oriented Programming", "Operating Systems"],
 };
 
 export const CONTACT_DATA: ContactData = {

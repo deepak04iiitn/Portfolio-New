@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useJourneyStore } from "@/hooks/useJourneyState";
 import { STATIONS } from "@/lib/railway/stations";
+import { warmAudioCtx } from "@/lib/audio/sounds";
 import type { StationId } from "@/lib/railway/types";
 
 /**
@@ -27,6 +28,13 @@ export default function BoardingScreen() {
   /* ── Board the train (main CTA) ────────────────────────────── */
   const handleBoard = () => {
     if (leaving) return;
+    /*
+     * warmAudioCtx() MUST be called here, directly in the click handler,
+     * while the user gesture is still on the call stack.
+     * Chrome / Safari only allow AudioContext.resume() during a gesture —
+     * if we wait until AudioManager's useEffect the window has closed.
+     */
+    warmAudioCtx();
     pendingJumpRef.current = null;
     setLeaving(true);
     enableAudio();
@@ -35,6 +43,7 @@ export default function BoardingScreen() {
   /* ── Direct station jump ────────────────────────────────────── */
   const handleJump = (id: StationId) => {
     if (leaving) return;
+    warmAudioCtx();
     pendingJumpRef.current = id;
     setLeaving(true);
     enableAudio();
@@ -173,7 +182,7 @@ export default function BoardingScreen() {
                       lineHeight: 1,
                     }}
                   >
-                    DX-2026
+                    DK-0402
                   </div>
                   <div
                     style={{
@@ -221,7 +230,7 @@ export default function BoardingScreen() {
                       letterSpacing: "2px",
                     }}
                   >
-                    LUCKNOW
+                    GORAKHPUR
                   </div>
                 </div>
                 <div

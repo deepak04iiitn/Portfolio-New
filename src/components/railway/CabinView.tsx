@@ -215,7 +215,7 @@ export default function CabinView({ isOpen, onClose }: CabinViewProps) {
                 opacity: 0.85,
               }}
             >
-              DX-2026 · ENGINEER ON DUTY
+              DK-0402 · ENGINEER ON DUTY
             </div>
 
             {/* Name */}

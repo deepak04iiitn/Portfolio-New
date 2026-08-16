@@ -271,7 +271,9 @@ function BuildingLayer({ timeOfDay }: { timeOfDay: string }) {
         width: "100%",
         pointerEvents: "none",
         transition: "opacity 3s ease",
-        zIndex: 1,
+        /* No zIndex — DOM order places {children} (world-pan/platforms)
+           after BuildingLayer in the JSX, so they naturally render on top
+           without an explicit z-index fight. */
       }}
       preserveAspectRatio="xMidYMax meet"
       aria-hidden="true"
@@ -356,19 +358,27 @@ function BuildingLayer({ timeOfDay }: { timeOfDay: string }) {
       {/* ── Terminal / digital motif — Projects station ── */}
       {stationType === "projects" && (
         <>
-          {/* Monitors */}
-          <rect x="340" y="220" width="80"  height="50" rx="4"
+          {/* Monitors — grounded: stands reach y=320 (SVG ground line) */}
+          {/* Left monitor */}
+          <rect x="310" y="258" width="140" height="8"  fill="#080808" /> {/* desk surface */}
+          <rect x="340" y="210" width="80"  height="48" rx="3"
             fill="#0D0D0D" stroke="#1A3A2A" strokeWidth="1" />
-          <rect x="360" y="270" width="40"  height="10" fill="#0A0A0A" />
-          <rect x="740" y="210" width="100" height="60" rx="4"
+          <rect x="375" y="258" width="10"  height="62" fill="#090909" /> {/* neck */}
+          <rect x="345" y="312" width="70"  height="8"  fill="#0A0A0A" /> {/* base */}
+
+          {/* Right monitor */}
+          <rect x="710" y="250" width="160" height="8"  fill="#080808" /> {/* desk surface */}
+          <rect x="740" y="196" width="100" height="54" rx="3"
             fill="#0D0D0D" stroke="#1A3A2A" strokeWidth="1" />
-          <rect x="770" y="270" width="40"  height="10" fill="#0A0A0A" />
+          <rect x="785" y="250" width="10"  height="62" fill="#090909" /> {/* neck */}
+          <rect x="748" y="304" width="84"  height="8"  fill="#0A0A0A" /> {/* base */}
+
           {/* Screen glows at night */}
           {windowOpacity > 0 && (
             <>
-              <rect x="342" y="222" width="76" height="46" rx="2"
+              <rect x="342" y="212" width="76" height="44" rx="2"
                 fill="#0D2A0D" opacity={windowOpacity * 0.4} />
-              <rect x="742" y="212" width="96" height="56" rx="2"
+              <rect x="742" y="198" width="96" height="50" rx="2"
                 fill="#0D2A0D" opacity={windowOpacity * 0.4} />
             </>
           )}

@@ -36,26 +36,44 @@ export default function Train({
   const wheelSmallRef = useRef<SVGGElement>(null);
 
   /* ── Wheel rotation ───────────────────────────────────────── */
+  /*
+   * We use `svgOrigin: "cx cy"` (absolute SVG coordinates) instead of
+   * `transformBox + transformOrigin` because SVG <g> elements that contain
+   * lines (no fill) have an unreliable fill-box bounding rect in GSAP,
+   * causing the transform origin to fall back to (0,0) of the viewport —
+   * which makes the wheels appear to "fly off" the screen.
+   *
+   * Wheel centers in SVG space (viewBox 0 0 440 165):
+   *   small leading:  cx=38,  cy=133
+   *   front drive:    cx=80,  cy=133
+   *   middle drive:   cx=140, cy=133
+   *   rear drive:     cx=200, cy=133
+   */
   useGSAP(
     () => {
-      const wheels = [wheel1Ref, wheel2Ref, wheel3Ref, wheelSmallRef];
+      const wheelData = [
+        { ref: wheel1Ref,    svgOrigin: "80 133"  },
+        { ref: wheel2Ref,    svgOrigin: "140 133" },
+        { ref: wheel3Ref,    svgOrigin: "200 133" },
+        { ref: wheelSmallRef, svgOrigin: "38 133" },
+      ];
+
       if (wheelsRotating) {
-        wheels.forEach((ref) => {
+        wheelData.forEach(({ ref, svgOrigin }) => {
           if (!ref.current) return;
           gsap.to(ref.current, {
             rotation: 360,
-            transformBox: "fill-box",
-            transformOrigin: "50% 50%",
+            svgOrigin,
             duration: 0.55,
             ease: "none",
             repeat: -1,
           });
         });
       } else {
-        wheels.forEach((ref) => {
+        wheelData.forEach(({ ref, svgOrigin }) => {
           if (!ref.current) return;
           gsap.killTweensOf(ref.current);
-          gsap.set(ref.current, { rotation: 0 });
+          gsap.set(ref.current, { rotation: 0, svgOrigin });
         });
       }
     },
@@ -158,8 +176,8 @@ export default function Train({
           <stop offset="100%" stopColor="#3A3A3A" />
         </radialGradient>
 
-        {/* ── Headlight glow (cone) ── */}
-        <radialGradient id="headGlow" cx="0%" cy="50%" r="100%">
+        {/* ── Headlight glow (cone) — originates from right side ── */}
+        <radialGradient id="headGlow" cx="100%" cy="50%" r="100%">
           <stop offset="0%" stopColor="rgba(255,248,192,0.6)" stopOpacity={headlightGlowOpacity} />
           <stop offset="100%" stopColor="rgba(255,248,192,0)" stopOpacity="0" />
         </radialGradient>
@@ -178,11 +196,11 @@ export default function Train({
       </defs>
 
       {/* ═══════════════════════════════════════════════════════
-          HEADLIGHT CONE (behind everything)
+          HEADLIGHT CONE — points rightward (front of travel)
       ════════════════════════════════════════════════════════ */}
       {headlightOn && (
         <polygon
-          points="16,92 -100,55 -100,130"
+          points="328,84 460,48 460,120"
           fill="url(#headGlow)"
           opacity="0.8"
         />
@@ -296,26 +314,26 @@ export default function Train({
         fontWeight="700"
         letterSpacing="2.5"
       >
-        DX-2026
+        DK-0402
       </text>
 
       {/* ═══════════════════════════════════════════════════════
-          HEADLIGHT ASSEMBLY
+          HEADLIGHT ASSEMBLY — mounted on cabin right face (front)
       ════════════════════════════════════════════════════════ */}
       {/* Outer housing */}
-      <circle cx="18" cy="90" r="12" fill="#151515" stroke="#4A4A4A" strokeWidth="1.5" />
+      <circle cx="328" cy="84" r="12" fill="#151515" stroke="#4A4A4A" strokeWidth="1.5" />
       {/* Inner reflector */}
-      <circle cx="18" cy="90" r="8" fill="#1E1E1E" />
+      <circle cx="328" cy="84" r="8" fill="#1E1E1E" />
       {/* Lens */}
-      <circle cx="18" cy="90" r="6" fill={headlightColor} />
+      <circle cx="328" cy="84" r="6" fill={headlightColor} />
       {headlightOn && (
-        <circle cx="18" cy="90" r="6"
+        <circle cx="328" cy="84" r="6"
           fill="rgba(255,248,192,0.9)"
           style={{ filter: "blur(1.5px)" }}
         />
       )}
       {/* Lens rim */}
-      <circle cx="18" cy="90" r="8" fill="none" stroke="#3A3A3A" strokeWidth="1.5" />
+      <circle cx="328" cy="84" r="8" fill="none" stroke="#3A3A3A" strokeWidth="1.5" />
 
       {/* ═══════════════════════════════════════════════════════
           PILOT / COWCATCHER

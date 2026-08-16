@@ -4,21 +4,22 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useJourneyStore } from "@/hooks/useJourneyState";
 import { STATIONS } from "@/lib/railway/stations";
-import WelcomeStation    from "@/components/stations/WelcomeStation";
-import EducationStation  from "@/components/stations/EducationStation";
-import ExperienceStation from "@/components/stations/ExperienceStation";
-import ProjectsStation   from "@/components/stations/ProjectsStation";
-import SkillsStation     from "@/components/stations/SkillsStation";
-import ContactStation    from "@/components/stations/ContactStation";
+import SlideFrame from "@/components/railway/SlideFrame";
+import { SLIDES as WelcomeSlides,    SLIDE_LABELS as WelcomeLabels    } from "@/components/stations/WelcomeStation";
+import { SLIDES as EducationSlides,  SLIDE_LABELS as EducationLabels  } from "@/components/stations/EducationStation";
+import { SLIDES as ExperienceSlides, SLIDE_LABELS as ExperienceLabels } from "@/components/stations/ExperienceStation";
+import { SLIDES as ProjectsSlides,   SLIDE_LABELS as ProjectsLabels   } from "@/components/stations/ProjectsStation";
+import { SLIDES as SkillsSlides,     SLIDE_LABELS as SkillsLabels     } from "@/components/stations/SkillsStation";
+import { SLIDES as ContactSlides,    SLIDE_LABELS as ContactLabels    } from "@/components/stations/ContactStation";
 import type { StationId } from "@/lib/railway/types";
 
-const PANELS: Record<StationId, React.ComponentType> = {
-  welcome:    WelcomeStation,
-  education:  EducationStation,
-  experience: ExperienceStation,
-  projects:   ProjectsStation,
-  skills:     SkillsStation,
-  contact:    ContactStation,
+const STATION_SLIDES: Record<StationId, { slides: React.ComponentType[]; labels: string[] }> = {
+  welcome:    { slides: WelcomeSlides,    labels: WelcomeLabels    },
+  education:  { slides: EducationSlides,  labels: EducationLabels  },
+  experience: { slides: ExperienceSlides, labels: ExperienceLabels },
+  projects:   { slides: ProjectsSlides,   labels: ProjectsLabels   },
+  skills:     { slides: SkillsSlides,     labels: SkillsLabels     },
+  contact:    { slides: ContactSlides,    labels: ContactLabels    },
 };
 
 const ENV_COLORS: Record<string, { bg: string; accent: string }> = {
@@ -75,7 +76,7 @@ export default function MobileJourney() {
     jumpToStation(STATIONS[currentStationIndex - 1].id as StationId);
   };
 
-  const PanelComponent = PANELS[currentStation?.id as StationId];
+  const slideSet = STATION_SLIDES[currentStation?.id as StationId];
 
   /* ── Boarding gate ──────────────────────────────────────────── */
   if (!boarded) {
@@ -116,7 +117,7 @@ export default function MobileJourney() {
             marginBottom: 48,
           }}
         >
-          DX-2026 · PORTFOLIO RAILWAY
+          DK-0402 · PORTFOLIO RAILWAY
         </div>
         <button
           onClick={handleBoard}
@@ -215,7 +216,7 @@ export default function MobileJourney() {
               letterSpacing: "3px",
             }}
           >
-            DX-2026
+            DK-0402
           </div>
           <div
             style={{
@@ -295,8 +296,17 @@ export default function MobileJourney() {
               {currentStation?.platformLabel?.toUpperCase()}
             </div>
 
-            {/* Station content panel */}
-            {PanelComponent && <PanelComponent />}
+            {/* Station content — swipeable slides (same as desktop) */}
+            {slideSet && (
+              <div style={{ height: 420, overflow: "hidden" }}>
+                <SlideFrame
+                  key={currentStation.id}
+                  slides={slideSet.slides}
+                  labels={slideSet.labels}
+                  accent="#F4C430"
+                />
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>

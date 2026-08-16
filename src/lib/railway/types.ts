@@ -117,10 +117,11 @@ export interface ProjectEntry {
 }
 
 export interface SkillsData {
-  languages: string[];
-  frameworks: string[];
-  tools: string[];
-  concepts: string[];
+  languages:    string[];
+  frontend:     string[];
+  backend:      string[];
+  genai:        string[];
+  fundamentals: string[];
 }
 
 export interface ContactData {

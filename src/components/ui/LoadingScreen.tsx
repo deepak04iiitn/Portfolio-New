@@ -98,7 +98,7 @@ export default function LoadingScreen({ onLoaded }: LoadingScreenProps) {
             letterSpacing: "5px",
           }}
         >
-          DX-2026 · PORTFOLIO RAILWAY
+          DK-0402 · PORTFOLIO RAILWAY
         </motion.div>
       </div>
 

@@ -64,7 +64,7 @@ Build a portfolio that:
 ## 4. Experience Flow
 
 ### 4.1 Landing Screen
-- Displays "INDIAN RAILWAYS" style header, train number (DX-2026), origin (Lucknow) → destination (Software Engineer).
+- Displays "INDIAN RAILWAYS" style header, train number (DX-2026), origin (Gorakhpur) → destination (Software Engineer).
 - Primary CTA: **"BOARD DEEPAK EXPRESS"**.
 - Secondary CTA: **"Explore Journey"** — a simplified station list for users who want to skip the cinematic experience.
 - This first user gesture is also used to unlock audio playback (browser autoplay restrictions require a user interaction before sound can play).
@@ -104,7 +104,7 @@ IDLE → BOARDING → DEPARTING → TRAVELLING → APPROACHING_STATION
 ## 5. Functional Requirements
 
 ### 5.1 Landing / Boarding Screen
-- FR-1: Landing screen displays a railway-header identity block: "🚉 INDIAN RAILWAYS", a boxed CTA "BOARD DEEPAK EXPRESS", platform label "Platform 01", and route line "Lucknow → Software Engineer".
+- FR-1: Landing screen displays a railway-header identity block: "🚉 INDIAN RAILWAYS", a boxed CTA "BOARD DEEPAK EXPRESS", platform label "Platform 01", and route line "Gorakhpur → Software Engineer".
 - FR-2: Landing screen shall also expose a secondary, non-cinematic path: **"Explore Journey"**, listing the station sequence (Education → Experience → Projects → Skills → Contact) as direct-jump links for time-constrained visitors.
 - FR-3: The "BOARD DEEPAK EXPRESS" click is the single required user gesture that both (a) starts the journey state machine and (b) initializes the Howler.js audio context (browsers block autoplay before a gesture).
 

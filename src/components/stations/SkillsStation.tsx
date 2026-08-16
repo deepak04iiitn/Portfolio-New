@@ -3,159 +3,169 @@
 import { motion } from "framer-motion";
 import { SKILLS_DATA } from "@/lib/railway/stations";
 
-const CATEGORY_COLORS: Record<string, string> = {
-  languages:  "#F4C430",
-  frameworks: "#A8C8A8",
-  tools:      "#87CEEB",
-  concepts:   "#E07070",
+const CATEGORY_META: Record<
+  string,
+  { label: string; icon: string; color: string; description: string }
+> = {
+  languages:    { label: "LANGUAGES & TOOLS",    icon: "{ }",  color: "#F4C430", description: "Core languages and developer tools" },
+  frontend:     { label: "FRONTEND",             icon: "◻",    color: "#87CEEB", description: "UI frameworks and styling technologies" },
+  backend:      { label: "BACKEND",              icon: "⬡",    color: "#A8C8A8", description: "Server-side runtimes and databases" },
+  genai:        { label: "GENERATIVE AI & LLMs", icon: "◈",    color: "#C8A8E8", description: "AI/ML frameworks and orchestration" },
+  fundamentals: { label: "CS FUNDAMENTALS",      icon: "∑",    color: "#E07070", description: "Computer science foundations" },
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
-  languages:  "LANGUAGES",
-  frameworks: "FRAMEWORKS & RUNTIMES",
-  tools:      "TOOLS & PLATFORMS",
-  concepts:   "CONCEPTS",
-};
+function makeCategorySlide(category: string): React.ComponentType {
+  const skills = SKILLS_DATA[category as keyof typeof SKILLS_DATA];
+  const meta   = CATEGORY_META[category];
 
-const CATEGORY_ICONS: Record<string, string> = {
-  languages:  "{ }",
-  frameworks: "⬡",
-  tools:      "⚙",
-  concepts:   "◈",
-};
+  return function CategorySlide() {
+    const { label, icon, color, description } = meta;
 
-/**
- * SkillsStation — Night-mode signal board (Platform 05).
- * 2×2 grid of categorised skill lists with coloured accent lines.
- */
-export default function SkillsStation() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
-      style={{ maxWidth: 700, margin: "0 auto" }}
-    >
-      {/* Section header */}
-      <div
-        style={{
-          fontFamily: "var(--font-display)",
-          fontSize: 11,
-          letterSpacing: "8px",
-          color: "#F4C430",
-          textAlign: "center",
-          marginBottom: 18,
-          fontWeight: 700,
-        }}
-      >
-        SKILLS SIGNAL BOARD
-      </div>
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 12,
-        }}
-      >
-        {Object.entries(SKILLS_DATA).map(([category, skills], catIndex) => {
-          const color = CATEGORY_COLORS[category] ?? "#F4C430";
-          return (
-            <motion.div
-              key={category}
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: catIndex * 0.08 }}
+        {/* ── Category identity ── */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 18,
+            paddingBottom: 18,
+            marginBottom: 20,
+            borderBottom: `1px solid ${color}22`,
+          }}
+        >
+          {/* Large icon badge */}
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: 8,
+              background: `${color}14`,
+              border: `1px solid ${color}35`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: "var(--font-mono)",
+              fontSize: 22,
+              color: color,
+              flexShrink: 0,
+            }}
+          >
+            {icon}
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <div
               style={{
-                background: "#060A06",
-                border: `1px solid ${color}28`,
-                borderTop: `2px solid ${color}`,
-                borderRadius: 4,
-                overflow: "hidden",
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(18px, 2.8vw, 26px)",
+                fontWeight: 700,
+                color: color,
+                letterSpacing: "3px",
+                lineHeight: 1.1,
+                marginBottom: 4,
               }}
             >
-              {/* Category header */}
-              <div
+              {label}
+            </div>
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 9,
+                color: "#5C6370",
+                letterSpacing: "1.5px",
+              }}
+            >
+              {description}
+            </div>
+          </div>
+
+          {/* Skill count badge */}
+          <div
+            style={{
+              padding: "6px 14px",
+              background: `${color}12`,
+              border: `1px solid ${color}28`,
+              borderRadius: 20,
+              fontFamily: "var(--font-mono)",
+              fontSize: 11,
+              color: color,
+              letterSpacing: "2px",
+              flexShrink: 0,
+            }}
+          >
+            {skills.length}
+          </div>
+        </div>
+
+        {/* ── Skills grid — 2 columns of substantial cards ── */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: { transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
+            hidden:  {},
+          }}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 10,
+          }}
+        >
+          {skills.map((skill, i) => (
+            <motion.div
+              key={skill}
+              variants={{
+                hidden:   { opacity: 0, y: 14 },
+                visible:  { opacity: 1, y: 0  },
+              }}
+              style={{
+                padding: "14px 18px",
+                background: `${color}08`,
+                border: `1px solid ${color}1E`,
+                borderLeft: `3px solid ${color}`,
+                borderRadius: "0 4px 4px 0",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              {/* Index number */}
+              <span
                 style={{
-                  padding: "8px 14px",
-                  background: `${color}0F`,
-                  borderBottom: `1px solid ${color}1C`,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 9,
+                  color: `${color}55`,
+                  letterSpacing: "1px",
+                  flexShrink: 0,
+                  minWidth: 18,
                 }}
               >
-                <span
-                  style={{
-                    fontSize: 11,
-                    color: color,
-                    opacity: 0.6,
-                    fontFamily: "var(--font-mono)",
-                  }}
-                >
-                  {CATEGORY_ICONS[category]}
-                </span>
-                <span
-                  style={{
-                    fontFamily: "var(--font-mono)",
-                    fontSize: 8,
-                    color: color,
-                    letterSpacing: "3px",
-                    opacity: 0.85,
-                  }}
-                >
-                  {CATEGORY_LABELS[category]}
-                </span>
-              </div>
-
-              {/* Skill list */}
-              <div style={{ padding: "10px 14px" }}>
-                {(skills as string[]).map((skill, i) => (
-                  <motion.div
-                    key={skill}
-                    initial={{ opacity: 0, x: -6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: catIndex * 0.08 + i * 0.04 }}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      padding: "5px 0",
-                      borderBottom:
-                        i < (skills as string[]).length - 1
-                          ? "1px solid rgba(255,255,255,0.035)"
-                          : "none",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 4,
-                        height: 4,
-                        borderRadius: "50%",
-                        background: color,
-                        flexShrink: 0,
-                        opacity: 0.65,
-                      }}
-                    />
-                    <span
-                      style={{
-                        fontFamily: "var(--font-railway)",
-                        fontSize: 13,
-                        color: "#D4C9B8",
-                        fontWeight: 500,
-                        letterSpacing: "0.3px",
-                      }}
-                    >
-                      {skill}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              {/* Skill name */}
+              <span
+                style={{
+                  fontFamily: "var(--font-railway)",
+                  fontSize: "clamp(12px, 1.5vw, 14px)",
+                  color: "#D4C9B8",
+                  fontWeight: 600,
+                  letterSpacing: "0.3px",
+                  lineHeight: 1.3,
+                }}
+              >
+                {skill}
+              </span>
             </motion.div>
-          );
-        })}
+          ))}
+        </motion.div>
       </div>
-    </motion.div>
-  );
+    );
+  };
 }
+
+export const SLIDES: React.ComponentType[] = Object.keys(SKILLS_DATA).map(makeCategorySlide);
+export const SLIDE_LABELS: string[] = Object.keys(SKILLS_DATA).map(
+  (k) => CATEGORY_META[k]?.label ?? k.toUpperCase(),
+);

@@ -118,12 +118,21 @@ export default function RailwayWorld({
       </Environment>
 
       {/* ── Train — fixed in screen space, world moves behind ── */}
+      {/*
+          Vertical alignment calculation:
+          - Track SVG height = 82px, positioned bottom:0 (flush with screen bottom)
+          - Left rail top face at y=20 in Track SVG → 82-20 = 62px from screen bottom
+          - Train SVG viewBox 0 0 440 165, wheel bottoms at y=156 (scale 0.95 → 148.2px)
+          - SVG rendered height = 165 * 0.95 = 156.75px
+          - Space below wheel bottoms = 156.75 - 148.2 = 8.55px
+          - Container bottom = rail_top - tail = 62 - 8.55 ≈ 54px
+      */}
       <div
         ref={trainRef}
         id="train-container"
         style={{
           position: "fixed",
-          bottom: "calc(35% + 4px)",
+          bottom: "54px",
           left: TRAIN_SCREEN_LEFT,
           zIndex: 10,
           /* Enable pointer events so the cabin window hitbox works */
