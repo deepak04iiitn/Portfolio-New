@@ -1,39 +1,61 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useJourneyStore } from "@/hooks/useJourneyState";
+import { STATIONS } from "@/lib/railway/stations";
+import type { StationId } from "@/lib/railway/types";
 
 /**
- * BoardingScreen — cinematic first-boot gate.
+ * BoardingScreen — cinematic first-boot gate (Phase 6 design).
  *
- * Shown while phase === "LOADING" | "BOARDING".
- * On "BOARD THE TRAIN" click:
- *  1. Plays exit animation
- *  2. Calls enableAudio() (unlocks AudioManager after user gesture)
- *  3. Sets phase → "IDLE" (reveals the railway world)
+ * Visual: "INDIAN RAILWAYS" style ticket — Train ID, route, platform,
+ *         primary CTA, and a direct-access station strip.
+ *
+ * Logic (Phase 3):
+ *   • Shown while phase === "LOADING" | "BOARDING"
+ *   • On "BOARD" click: play exit → enableAudio → setPhase("IDLE")
+ *   • On direct station click: play exit → enableAudio → jumpToStation(id)
+ *   • Enter / Space triggers boarding from keyboard
  */
 export default function BoardingScreen() {
-  const { phase, setPhase, enableAudio } = useJourneyStore();
-  const visible = phase === "LOADING" || phase === "BOARDING";
+  const { phase, setPhase, enableAudio, jumpToStation } = useJourneyStore();
+  const visible = phase === "BOARDING";
   const [leaving, setLeaving] = useState(false);
+  const pendingJumpRef = useRef<StationId | null>(null);
 
+  /* ── Board the train (main CTA) ────────────────────────────── */
   const handleBoard = () => {
     if (leaving) return;
+    pendingJumpRef.current = null;
     setLeaving(true);
     enableAudio();
   };
 
-  /* After the exit animation completes, advance the phase */
+  /* ── Direct station jump ────────────────────────────────────── */
+  const handleJump = (id: StationId) => {
+    if (leaving) return;
+    pendingJumpRef.current = id;
+    setLeaving(true);
+    enableAudio();
+  };
+
+  /* ── After exit animation completes ────────────────────────── */
   const handleExitComplete = () => {
-    if (leaving) {
+    if (!leaving) return;
+    if (pendingJumpRef.current) {
+      jumpToStation(pendingJumpRef.current);
+    } else {
       setPhase("IDLE");
     }
   };
 
-  /* Reset leaving state if somehow shown again */
+  /* Reset on re-show */
   useEffect(() => {
-    if (visible) setLeaving(false);
+    if (visible) {
+      setLeaving(false);
+      pendingJumpRef.current = null;
+    }
   }, [visible]);
 
   /* Keyboard: Enter / Space → board */
@@ -54,294 +76,328 @@ export default function BoardingScreen() {
           key="boarding"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 0.98, filter: "blur(8px)" }}
+          exit={{ opacity: 0, scale: 0.97, filter: "blur(8px)" }}
           transition={{ duration: 0.55, ease: "easeIn" }}
           style={{
             position: "fixed",
             inset: 0,
             zIndex: 300,
-            background: "linear-gradient(160deg, #060B06 0%, #0D150D 55%, #060A06 100%)",
             display: "flex",
-            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            fontFamily: "var(--font-mono)",
-            overflow: "hidden",
+            background:
+              "linear-gradient(160deg, #0A0F0A 0%, #0D180D 50%, #080C08 100%)",
+            fontFamily: "var(--font-railway)",
+            overflowY: "auto",
+            padding: "24px",
           }}
           role="dialog"
           aria-modal="true"
           aria-label="Board the Deepak Express"
         >
-          {/* ── Film grain overlay ────────────────────────────── */}
+          {/* Background texture */}
           <div
             style={{
               position: "absolute",
               inset: 0,
               backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E\")",
+                "repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.007) 40px, rgba(255,255,255,0.007) 41px)",
               pointerEvents: "none",
-              opacity: 0.4,
             }}
           />
 
-          {/* ── Horizontal rule lines (station board aesthetic) ── */}
           <div
             style={{
-              position: "absolute",
-              top: "12%",
-              left: 0,
-              right: 0,
-              height: "1px",
-              background:
-                "linear-gradient(90deg, transparent 0%, rgba(244,196,48,0.15) 20%, rgba(244,196,48,0.15) 80%, transparent 100%)",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              bottom: "14%",
-              left: 0,
-              right: 0,
-              height: "1px",
-              background:
-                "linear-gradient(90deg, transparent 0%, rgba(244,196,48,0.15) 20%, rgba(244,196,48,0.15) 80%, transparent 100%)",
-            }}
-          />
-
-          {/* ── Main content area ─────────────────────────────── */}
-          <div
-            style={{
+              width: "100%",
+              maxWidth: 640,
               position: "relative",
-              zIndex: 10,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 0,
-              maxWidth: 520,
-              width: "90%",
             }}
           >
-            {/* Line 1: train ID */}
+            {/* ── Railway ticket card ─────────────────────────── */}
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
+              transition={{ delay: 0.1, duration: 0.5 }}
               style={{
-                fontSize: 10,
-                letterSpacing: "6px",
-                color: "rgba(244,196,48,0.5)",
-                marginBottom: 20,
-                textTransform: "uppercase",
+                border: "2px solid rgba(244,196,48,0.6)",
+                borderRadius: 4,
+                marginBottom: 24,
+                overflow: "hidden",
+                boxShadow:
+                  "0 24px 64px rgba(0,0,0,0.7), 0 0 40px rgba(244,196,48,0.04)",
               }}
             >
-              DX-2026 · PLATFORM 01 · CENTRAL STATION
-            </motion.div>
-
-            {/* Line 2: main title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45, duration: 0.55 }}
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(38px, 8vw, 72px)",
-                fontWeight: 700,
-                color: "#F5F0E8",
-                letterSpacing: "6px",
-                lineHeight: 1,
-                textAlign: "center",
-                margin: 0,
-                marginBottom: 12,
-              }}
-            >
-              DEEPAK
-            </motion.h1>
-
-            {/* Line 3: subtitle */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(11px, 2vw, 16px)",
-                color: "#A8C8A8",
-                letterSpacing: "10px",
-                textAlign: "center",
-                marginBottom: 40,
-                fontWeight: 500,
-              }}
-            >
-              EXPRESS
-            </motion.div>
-
-            {/* Divider */}
-            <motion.div
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ delay: 0.7, duration: 0.6, ease: "easeOut" }}
-              style={{
-                width: "100%",
-                maxWidth: 280,
-                height: 1,
-                background:
-                  "linear-gradient(90deg, transparent, rgba(244,196,48,0.4), transparent)",
-                transformOrigin: "center",
-                marginBottom: 40,
-              }}
-            />
-
-            {/* Journey route */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.85, duration: 0.5 }}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                flexWrap: "wrap",
-                justifyContent: "center",
-                marginBottom: 48,
-              }}
-            >
-              {[
-                "CENTRAL",
-                "EDUCATION",
-                "EXPERIENCE",
-                "PROJECTS",
-                "SKILLS",
-                "CONTACT",
-              ].map((stop, i, arr) => (
-                <div
-                  key={stop}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                  }}
-                >
-                  <span
+              {/* Ticket header band */}
+              <div
+                style={{
+                  background: "linear-gradient(135deg, #1A3A2A, #0D180D)",
+                  padding: "18px 28px",
+                  borderBottom: "1px solid rgba(244,196,48,0.3)",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <div
                     style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "clamp(17px, 3vw, 22px)",
+                      fontWeight: 700,
+                      color: "#F4C430",
+                      letterSpacing: "4px",
+                      marginBottom: 4,
+                    }}
+                  >
+                    INDIAN RAILWAYS
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-mono)",
                       fontSize: 9,
-                      color:
-                        i === 0
-                          ? "#F4C430"
-                          : "rgba(168,200,168,0.5)",
+                      color: "rgba(244,196,48,0.45)",
+                      letterSpacing: "4px",
+                    }}
+                  >
+                    PORTFOLIO EXPRESS · CLASS: ENGINEERING
+                  </div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 22,
+                      color: "#F4C430",
+                      fontWeight: 700,
+                      letterSpacing: "2px",
+                      lineHeight: 1,
+                    }}
+                  >
+                    DX-2026
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 8,
+                      color: "#2ECC71",
+                      letterSpacing: "3px",
+                      marginTop: 4,
+                    }}
+                  >
+                    ● ON TIME
+                  </div>
+                </div>
+              </div>
+
+              {/* Route row */}
+              <div
+                style={{
+                  padding: "20px 28px",
+                  background: "#0A0A0A",
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto 1fr",
+                  alignItems: "center",
+                  gap: 12,
+                }}
+              >
+                <div>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 8,
+                      color: "#5C6370",
+                      letterSpacing: "3px",
+                      marginBottom: 6,
+                    }}
+                  >
+                    ORIGIN
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "clamp(14px, 2.5vw, 18px)",
+                      color: "#F5F0E8",
+                      fontWeight: 600,
                       letterSpacing: "2px",
                     }}
                   >
-                    {stop}
-                  </span>
-                  {i < arr.length - 1 && (
-                    <span
-                      style={{ fontSize: 9, color: "rgba(92,99,112,0.4)" }}
-                    >
-                      →
-                    </span>
-                  )}
+                    LUCKNOW
+                  </div>
                 </div>
-              ))}
+                <div
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 16,
+                    color: "rgba(244,196,48,0.4)",
+                    letterSpacing: "2px",
+                  }}
+                >
+                  →
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 8,
+                      color: "#5C6370",
+                      letterSpacing: "3px",
+                      marginBottom: 6,
+                    }}
+                  >
+                    DESTINATION
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      fontSize: "clamp(14px, 2.5vw, 18px)",
+                      color: "#A8C8A8",
+                      fontWeight: 600,
+                      letterSpacing: "2px",
+                    }}
+                  >
+                    SOFTWARE ENGINEER
+                  </div>
+                </div>
+              </div>
+
+              {/* Platform footer */}
+              <div
+                style={{
+                  background: "#1A3A2A",
+                  padding: "8px 28px",
+                  borderTop: "1px solid rgba(244,196,48,0.2)",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 9,
+                    color: "rgba(244,196,48,0.6)",
+                    letterSpacing: "4px",
+                  }}
+                >
+                  PLATFORM 01
+                </span>
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: 9,
+                    color: "#3A4A3A",
+                    letterSpacing: "3px",
+                  }}
+                >
+                  DEP: NOW
+                </span>
+              </div>
             </motion.div>
 
-            {/* BOARD button */}
+            {/* ── Primary CTA ─────────────────────────────────── */}
             <motion.button
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.0, duration: 0.5 }}
+              transition={{ delay: 0.25, duration: 0.45 }}
               onClick={handleBoard}
+              whileHover={{ scale: 1.015 }}
+              whileTap={{ scale: 0.985 }}
               style={{
-                padding: "16px 52px",
+                width: "100%",
+                padding: "18px 24px",
                 background: "#F4C430",
                 border: "none",
-                borderRadius: 2,
-                color: "#0A0A0A",
-                fontFamily: "var(--font-mono)",
-                fontSize: 12,
-                letterSpacing: "5px",
+                borderRadius: 3,
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(14px, 2.5vw, 17px)",
                 fontWeight: 700,
+                color: "#0A0A0A",
+                letterSpacing: "5px",
                 cursor: "pointer",
-                textTransform: "uppercase",
-                marginBottom: 20,
-                boxShadow: "0 8px 32px rgba(244,196,48,0.25)",
-                transition: "transform 0.1s ease, box-shadow 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow =
-                  "0 12px 40px rgba(244,196,48,0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow =
-                  "0 8px 32px rgba(244,196,48,0.25)";
-              }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
+                marginBottom: 16,
+                display: "block",
+                boxShadow: "0 4px 20px rgba(244,196,48,0.25)",
               }}
             >
-              BOARD THE TRAIN
+              BOARD DEEPAK EXPRESS
             </motion.button>
 
-            {/* Keyboard hint */}
+            {/* ── Direct station access ────────────────────────── */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1.2, duration: 0.4 }}
+              transition={{ delay: 0.4, duration: 0.4 }}
               style={{
-                fontSize: 9,
-                color: "rgba(92,99,112,0.5)",
+                border: "1px solid rgba(244,196,48,0.14)",
+                borderRadius: 3,
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  padding: "9px 16px",
+                  background: "rgba(26,58,42,0.18)",
+                  borderBottom: "1px solid rgba(244,196,48,0.1)",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 8,
+                  color: "#5C6370",
+                  letterSpacing: "4px",
+                }}
+              >
+                EXPLORE JOURNEY — DIRECT ACCESS
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
+                }}
+              >
+                {STATIONS.filter((s) => s.id !== "welcome").map((station) => (
+                  <button
+                    key={station.id}
+                    onClick={() => handleJump(station.id as StationId)}
+                    style={{
+                      padding: "12px 8px",
+                      background: "transparent",
+                      border: "none",
+                      borderRight: "1px solid rgba(244,196,48,0.08)",
+                      color: "#6B7280",
+                      fontFamily: "var(--font-mono)",
+                      fontSize: 8,
+                      letterSpacing: "2px",
+                      cursor: "pointer",
+                      transition: "all 0.18s ease",
+                      textTransform: "uppercase",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = "#F4C430";
+                      e.currentTarget.style.background = "rgba(26,58,42,0.3)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "#6B7280";
+                      e.currentTarget.style.background = "transparent";
+                    }}
+                  >
+                    {station.displayName.split(" ")[0]}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Keyboard hint */}
+            <div
+              style={{
+                marginTop: 16,
+                fontFamily: "var(--font-mono)",
+                fontSize: 8,
+                color: "#2A3A2A",
+                textAlign: "center",
                 letterSpacing: "2px",
               }}
             >
               PRESS ENTER OR SPACE TO BOARD
-            </motion.div>
-          </div>
-
-          {/* ── Bottom ticker tape ────────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.3, duration: 0.4 }}
-            style={{
-              position: "absolute",
-              bottom: "6%",
-              left: 0,
-              right: 0,
-              overflow: "hidden",
-              height: 20,
-              borderTop: "1px solid rgba(244,196,48,0.06)",
-              borderBottom: "1px solid rgba(244,196,48,0.06)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                whiteSpace: "nowrap",
-                animation: "ticker-scroll 28s linear infinite",
-                fontSize: 9,
-                color: "rgba(244,196,48,0.2)",
-                letterSpacing: "3px",
-                lineHeight: "20px",
-              }}
-            >
-              {Array.from({ length: 6 }).map((_, i) => (
-                <span key={i} style={{ paddingRight: 80 }}>
-                  DEEPAK EXPRESS · DX-2026 · PORTFOLIO JOURNEY · ALL ABOARD ·
-                  PLATFORM 01 · DEPARTURE IMMINENT · DESTINATIONS: EDUCATION ·
-                  EXPERIENCE · PROJECTS · SKILLS · CONTACT ·
-                </span>
-              ))}
             </div>
-          </motion.div>
-
-          {/* ── Ticker animation keyframe ─────────────────────── */}
-          <style>{`
-            @keyframes ticker-scroll {
-              from { transform: translateX(0); }
-              to   { transform: translateX(-50%); }
-            }
-          `}</style>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
