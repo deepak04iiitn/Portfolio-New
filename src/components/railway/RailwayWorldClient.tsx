@@ -8,6 +8,7 @@ import BoardingScreen from "./BoardingScreen";
 import StationContentOverlay from "./StationContentOverlay";
 import AudioManager from "@/components/audio/AudioManager";
 import MuteToggle from "@/components/ui/MuteToggle";
+import FilmGrain from "@/components/ui/FilmGrain";
 import { useJourneyStore } from "@/hooks/useJourneyState";
 import { useTrainController } from "@/hooks/useTrainController";
 import { AnimationController } from "@/lib/railway/animationController";
@@ -126,6 +127,9 @@ export default function RailwayWorldClient() {
     <>
       {/* ── Behavioural: audio sequencer (renders nothing) ─── */}
       <AudioManager />
+
+      {/* ── Film grain — persistent analogue texture ─────────── */}
+      <FilmGrain />
 
       {/* ── Boarding gate — shown before IDLE ────────────────── */}
       <BoardingScreen />

@@ -5,6 +5,7 @@ import Environment from "./Environment";
 import Track, { TRACK_WORLD_WIDTH } from "./Track";
 import Train from "./Train";
 import StationWrapper from "./Station";
+import ParticleSystem from "./Particles";
 import { useJourneyStore } from "@/hooks/useJourneyState";
 import { STATIONS } from "@/lib/railway/stations";
 
@@ -138,6 +139,18 @@ export default function RailwayWorld({
           headlightOn={trainState.headlightOn}
           scale={0.95}
           onWindowClick={onWindowClick}
+        />
+
+        {/* Smoke particles — origin aligned with SVG chimney at x≈91,y≈17
+            (SVG coords 96×18 × scale 0.95). Canvas is 150×180px with
+            originY=155 so its bottom sits just above the funnel tip. */}
+        <ParticleSystem
+          active={trainState.smokeActive}
+          type="smoke"
+          originX={43}
+          originY={155}
+          width={150}
+          height={180}
         />
       </div>
     </div>
