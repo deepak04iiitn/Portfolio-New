@@ -3,22 +3,33 @@
 import { motion } from "framer-motion";
 import { PROJECTS_DATA } from "@/lib/railway/stations";
 
+const ACCENT = "#B87ED6";
+
 function makeProjectSlide(idx: number): React.ComponentType {
   const project = PROJECTS_DATA[idx];
+
   return function ProjectSlide() {
     return (
-      <div style={{ fontFamily: "var(--font-railway)" }}>
-        {/* Bay / status header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 0, fontFamily: "var(--font-railway)" }}>
+
+        {/* ── Bay / status bar ── */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 14,
+          }}
+        >
           <span
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: 8,
-              color: "#6B7280",
+              color: "#4B5563",
               letterSpacing: "4px",
             }}
           >
-            BAY {String(idx + 1).padStart(2, "0")}
+            BAY {String(idx + 1).padStart(2, "0")} / {String(PROJECTS_DATA.length).padStart(2, "0")}
           </span>
           <span
             style={{
@@ -37,7 +48,10 @@ function makeProjectSlide(idx: number): React.ComponentType {
                 height: 6,
                 borderRadius: "50%",
                 background: project.status === "LIVE" ? "#2ECC71" : "#F4C430",
-                boxShadow: project.status === "LIVE" ? "0 0 6px #2ECC71" : "0 0 6px #F4C430",
+                boxShadow:
+                  project.status === "LIVE"
+                    ? "0 0 6px #2ECC71"
+                    : "0 0 6px #F4C430",
                 display: "inline-block",
               }}
             />
@@ -45,49 +59,95 @@ function makeProjectSlide(idx: number): React.ComponentType {
           </span>
         </div>
 
-        {/* Project name */}
+        {/* ── Project name + tagline ── */}
         <div
           style={{
             fontFamily: "var(--font-display)",
-            fontSize: "clamp(24px, 4vw, 42px)",
+            fontSize: "clamp(22px, 3.5vw, 36px)",
             fontWeight: 700,
             color: "#F5F0E8",
             letterSpacing: "3px",
             lineHeight: 1,
-            marginBottom: 18,
+            marginBottom: 6,
           }}
         >
           {project.name.toUpperCase()}
         </div>
+        <div
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: 10,
+            color: `${ACCENT}99`,
+            letterSpacing: "2px",
+            marginBottom: 18,
+          }}
+        >
+          {project.tagline}
+        </div>
 
-        {/* Gold divider */}
+        {/* ── Accent divider ── */}
         <div
           style={{
             height: 1,
-            background: "linear-gradient(90deg, #B87ED655, transparent)",
-            marginBottom: 18,
+            background: `linear-gradient(90deg, ${ACCENT}44, transparent)`,
+            marginBottom: 20,
           }}
         />
 
-        {/* Description */}
-        <p
-          style={{
-            fontSize: 15,
-            color: "#A8B89A",
-            lineHeight: 1.65,
-            margin: "0 0 20px",
-          }}
+        {/* ── Highlights — numbered bullet cards ── */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={{ visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } }, hidden: {} }}
+          style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 22 }}
         >
-          {project.description}
-        </p>
+          {project.highlights.map((point, i) => (
+            <motion.div
+              key={i}
+              variants={{ hidden: { opacity: 0, x: -12 }, visible: { opacity: 1, x: 0 } }}
+              style={{
+                display: "flex",
+                gap: 14,
+                padding: "12px 16px",
+                background: `${ACCENT}07`,
+                border: `1px solid ${ACCENT}18`,
+                borderLeft: `3px solid ${ACCENT}`,
+                borderRadius: "0 4px 4px 0",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 9,
+                  color: `${ACCENT}55`,
+                  letterSpacing: "1px",
+                  flexShrink: 0,
+                  marginTop: 2,
+                  minWidth: 18,
+                }}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span
+                style={{
+                  fontSize: "clamp(12px, 1.4vw, 13.5px)",
+                  color: "#A8B89A",
+                  lineHeight: 1.65,
+                }}
+              >
+                {point}
+              </span>
+            </motion.div>
+          ))}
+        </motion.div>
 
-        {/* Stack tags */}
-        <div style={{ marginBottom: 24 }}>
+        {/* ── Tech stack ── */}
+        <div style={{ marginBottom: 22 }}>
           <div
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: 7,
-              color: "#6B7280",
+              color: "#4B5563",
               letterSpacing: "3px",
               marginBottom: 10,
             }}
@@ -97,22 +157,22 @@ function makeProjectSlide(idx: number): React.ComponentType {
           <motion.div
             initial="hidden"
             animate="visible"
-            variants={{ visible: { transition: { staggerChildren: 0.06 } }, hidden: {} }}
-            style={{ display: "flex", flexWrap: "wrap", gap: 8 }}
+            variants={{ visible: { transition: { staggerChildren: 0.05 } }, hidden: {} }}
+            style={{ display: "flex", flexWrap: "wrap", gap: 7 }}
           >
             {project.stack.map((tech) => (
               <motion.span
                 key={tech}
-                variants={{ hidden: { opacity: 0, y: 6 }, visible: { opacity: 1, y: 0 } }}
+                variants={{ hidden: { opacity: 0, scale: 0.88 }, visible: { opacity: 1, scale: 1 } }}
                 style={{
-                  padding: "5px 12px",
-                  background: "rgba(26,58,42,0.7)",
-                  border: "1px solid rgba(184,126,214,0.2)",
+                  padding: "4px 11px",
+                  background: "rgba(26,42,36,0.75)",
+                  border: `1px solid ${ACCENT}22`,
                   borderRadius: 2,
                   fontFamily: "var(--font-mono)",
-                  fontSize: 10,
-                  color: "#B87ED6",
-                  letterSpacing: "0.5px",
+                  fontSize: 9.5,
+                  color: ACCENT,
+                  letterSpacing: "0.4px",
                 }}
               >
                 {tech}
@@ -121,41 +181,43 @@ function makeProjectSlide(idx: number): React.ComponentType {
           </motion.div>
         </div>
 
-        {/* Links */}
-        <div style={{ display: "flex", gap: 12 }}>
-          <a
-            href={project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              flex: 1,
-              padding: "12px 16px",
-              background: "#B87ED6",
-              color: "#0A0A0A",
-              fontFamily: "var(--font-mono)",
-              fontSize: 9,
-              letterSpacing: "3px",
-              textAlign: "center",
-              textDecoration: "none",
-              borderRadius: 2,
-              fontWeight: 700,
-              transition: "opacity 0.15s ease",
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
-          >
-            LIVE DEMO ↗
-          </a>
+        {/* ── Links ── */}
+        <div style={{ display: "flex", gap: 10 }}>
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                flex: 1,
+                padding: "11px 16px",
+                background: ACCENT,
+                color: "#0A0A0A",
+                fontFamily: "var(--font-mono)",
+                fontSize: 9,
+                letterSpacing: "3px",
+                textAlign: "center",
+                textDecoration: "none",
+                borderRadius: 2,
+                fontWeight: 700,
+                transition: "opacity 0.15s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.84"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+            >
+              LIVE DEMO ↗
+            </a>
+          )}
           <a
             href={project.githubUrl}
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              flex: 1,
-              padding: "12px 16px",
+              flex: project.liveUrl ? 1 : 2,
+              padding: "11px 16px",
               background: "transparent",
-              border: "1px solid rgba(184,126,214,0.35)",
-              color: "#B87ED6",
+              border: `1px solid ${ACCENT}38`,
+              color: ACCENT,
               fontFamily: "var(--font-mono)",
               fontSize: 9,
               letterSpacing: "3px",
@@ -165,15 +227,15 @@ function makeProjectSlide(idx: number): React.ComponentType {
               transition: "all 0.15s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(184,126,214,0.1)";
-              e.currentTarget.style.borderColor = "rgba(184,126,214,0.6)";
+              e.currentTarget.style.background = `${ACCENT}12`;
+              e.currentTarget.style.borderColor = `${ACCENT}66`;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.borderColor = "rgba(184,126,214,0.35)";
+              e.currentTarget.style.borderColor = `${ACCENT}38`;
             }}
           >
-            GITHUB ↗
+            SOURCE CODE ↗
           </a>
         </div>
       </div>

@@ -177,22 +177,57 @@ export const EXPERIENCE_DATA: ExperienceEntry[] = [
 export const PROJECTS_DATA: ProjectEntry[] = [
   {
     id: "lld-canvas",
-    name: "LLD Canvas",
-    description:
-      "A collaborative low-level design whiteboard with real-time multiplayer, UML diagramming, and export to PNG/SVG.",
-    stack: ["Next.js", "TypeScript", "WebSocket", "Canvas API"],
-    liveUrl: "#",
-    githubUrl: "#",
+    name: "LLDCanvas",
+    tagline: "LLD Interview Prep Platform",
+    highlights: [
+      "Full-stack React Flow UML editor with text-to-UML, all 23 GoF design patterns, multi-format export, blog, and admin dashboard.",
+      "Real-time collaboration via Socket.io — live cursors, JWT auth, role-based access, and a multi-language code execution sandbox across 12 compilers.",
+      "Razorpay subscription billing (Free / Pro / Ultimate) with webhook-driven plan enforcement across all platform features.",
+    ],
+    stack: ["Next.js", "React.js", "TypeScript", "Node.js", "Express.js", "MongoDB", "Socket.io", "Firebase"],
+    liveUrl: "https://www.lldcanvas.in/",
+    githubUrl: "https://github.com/deepak04iiitn/LLDCanvas",
     status: "LIVE",
   },
   {
     id: "route2hire",
     name: "Route2Hire",
-    description:
-      "Job application tracker with Kanban board, interview stage pipeline, and integrated company research tools.",
-    stack: ["React", "Node.js", "PostgreSQL", "Prisma"],
-    liveUrl: "#",
-    githubUrl: "#",
+    tagline: "One-Stop Platform for QA / SDET Professionals",
+    highlights: [
+      "Grew to 1,600+ active users and a 3,500+ member community — consolidating job listings, interview experiences, salary structures, roadmaps, and a QA/SDET DSA sheet with a LeetCode-style compiler and leaderboard.",
+      "90+ core APIs crafted; job load time cut from ~15 s to 2 s. Razorpay subscription billing with daily premium email digest.",
+      "Resume builder, coding sandbox with 50 test cases per problem, 70+ active leaderboard participants, and full end-to-end performance optimization.",
+    ],
+    stack: ["React.js", "Node.js", "Express.js", "MongoDB", "Tailwind CSS", "Framer Motion", "Redux", "Firebase"],
+    liveUrl: "https://route2hire.com/",
+    githubUrl: "https://github.com/deepak04iiitn/Route2Hire",
+    status: "LIVE",
+  },
+  {
+    id: "askbro",
+    name: "AskBro",
+    tagline: "Team Knowledge Assistant — RAG-Powered",
+    highlights: [
+      "RAG application for teams to query private knowledge bases in plain English — supports PDF, Word, Markdown uploads, GitHub repo ingestion, and Notion page sync, with every answer citing the exact source.",
+      "Hybrid search pipeline: BGE-large-en-v1.5 dense embeddings in Qdrant + BM25 keyword search, cross-encoder re-ranking, and per-workspace metadata filtering for high retrieval precision.",
+      "Multi-tenant workspaces with JWT auth, bcrypt, and invite-code access. SSE token streaming via Qwen3-32B; Celery handles long ingestion jobs asynchronously so the UI stays responsive.",
+    ],
+    stack: ["Next.js 16", "FastAPI", "Python", "Celery", "MongoDB", "Qdrant", "BGE Embeddings", "Qwen3-32B", "SSE"],
+    githubUrl: "https://github.com/deepak04iiitn/AskBro",
+    status: "LIVE",
+  },
+  {
+    id: "engazium",
+    name: "Engazium",
+    tagline: "Community Engagement for Micro-Creators",
+    highlights: [
+      "Niche squads with fair participation — creators join squads matched by niche, format, and follower range; a credit-based loop, squad-rules gate, and plan-based daily post limits (Growth / Pro / Momentum) keep engagement even and cut freeloading.",
+      "Platform-safe, human engagement — content links shared and engaged with via a validated watch window (20s+); cron jobs recompute engagement scores, warn or remove low-engagement members, and clean stale posts.",
+      "Full auth (email + Google), weekly growth check-ins with charts, live activity feeds, achievements, admin governance with searchable user/squad management, block/remove, audit logs, and moderated testimonials.",
+    ],
+    stack: ["Next.js 16", "React 19", "Tailwind CSS 4", "shadcn/ui", "Redux Toolkit", "Node.js", "Express 5", "MongoDB", "JWT", "Recharts"],
+    liveUrl: "https://www.engazium.in/",
+    githubUrl: "https://github.com/deepak04iiitn/Engazium",
     status: "LIVE",
   },
 ];

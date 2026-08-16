@@ -109,9 +109,10 @@ export interface ExperienceEntry {
 export interface ProjectEntry {
   id: string;
   name: string;
-  description: string;
+  tagline: string;
+  highlights: string[];
   stack: string[];
-  liveUrl: string;
+  liveUrl?: string;
   githubUrl: string;
   status: "LIVE" | "WIP" | "ARCHIVED";
 }
