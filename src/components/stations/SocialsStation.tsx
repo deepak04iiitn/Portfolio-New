@@ -12,7 +12,7 @@ const LINKS = [
     sub: "deepak04iiitn",
     url: CONTACT_DATA.github,
     icon: "⌥",
-    desc: "61 repositories · open-source projects & experiments",
+    desc: "69 repositories · open-source projects & experiments",
   },
   {
     id: "linkedin",
