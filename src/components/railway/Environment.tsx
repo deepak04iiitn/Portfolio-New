@@ -75,7 +75,7 @@ export default function Environment({ state, children }: EnvironmentProps) {
   return (
     <div
       style={{
-        position: "fixed",
+        position: "absolute",
         inset: 0,
         overflow: "hidden",
         pointerEvents: "none",

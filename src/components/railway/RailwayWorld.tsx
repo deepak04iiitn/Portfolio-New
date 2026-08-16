@@ -1,73 +1,71 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
+import type { RefObject } from "react";
 import Environment from "./Environment";
 import Track, { TRACK_WORLD_WIDTH } from "./Track";
 import Train from "./Train";
-import StationWrapper, { WORLD_INITIAL_OFFSET } from "./Station";
+import StationWrapper from "./Station";
 import { useJourneyStore } from "@/hooks/useJourneyState";
-import { STATIONS, STATION_SPACING } from "@/lib/railway/stations";
+import { STATIONS } from "@/lib/railway/stations";
 
-gsap.registerPlugin(useGSAP);
-
-/**
- * The fixed screen-space X position of the train (% of viewport).
- * The world scrolls to bring each station to this horizontal position.
- */
 const TRAIN_SCREEN_LEFT = "30%";
 
+interface RailwayWorldProps {
+  /** Ref attached to the #world-pan div — translated by useTrainController */
+  worldRef: RefObject<HTMLDivElement | null>;
+  /** Ref attached to the train container div — used for shake effects */
+  trainRef: RefObject<HTMLDivElement | null>;
+  /** Ref attached to the #camera-rig div — target for camera transitions */
+  cameraRef: RefObject<HTMLDivElement | null>;
+  /** Passed to Train to enable cabin-view click area */
+  onWindowClick?: () => void;
+}
+
 /**
- * RailwayWorld is the root scene compositor.
+ * RailwayWorld is a pure rendering layer.
+ * It places every scene element at the correct position and hands
+ * refs to the parent (RailwayWorldClient) for GSAP control.
  *
  * Layout:
- *  ┌──────────────────────────────────────────────────────┐
- *  │  Environment (fixed, full-screen backdrop)           │
- *  │   └─ #world-pan  (absolute, translates left)         │
- *  │       ├─ Track SVG  (bottom 0, full world width)     │
- *  │       └─ Station wrappers (absolute in world space)  │
- *  │  Train (fixed in screen space, world moves behind)   │
- *  └──────────────────────────────────────────────────────┘
+ *  ┌─────────────────────────────────────────────────────────┐
+ *  │  #camera-rig  (fixed, inset 0 — camera zoom target)     │
+ *  │   ├─ Environment (absolute — sky / ground / clouds)      │
+ *  │   │   └─ #world-pan  (absolute — translates left/right)  │
+ *  │   │       ├─ Track SVG                                   │
+ *  │   │       └─ Station wrappers                            │
+ *  │   └─ #train-container (fixed at 30% from left)          │
+ *  └─────────────────────────────────────────────────────────┘
+ *
+ * No GSAP lives here — all animation is driven by the controller
+ * hooks in RailwayWorldClient.
  */
-export default function RailwayWorld() {
-  const worldRef = useRef<HTMLDivElement>(null);
+export default function RailwayWorld({
+  worldRef,
+  trainRef,
+  cameraRef,
+  onWindowClick,
+}: RailwayWorldProps) {
   const { trainState, currentStationIndex } = useJourneyStore();
   const currentStation = STATIONS[currentStationIndex];
 
-  /**
-   * Phase 1 world offset: instant snap to station position.
-   * Phase 2 will replace this with the GSAP animation controller.
-   *
-   * worldOffset = -(stationIndex * STATION_SPACING)
-   * so that station N's platform (at world x = WORLD_INITIAL_OFFSET + N*1800)
-   * arrives at approximately TRAIN_SCREEN_LEFT (~432px on 1440px viewport).
-   */
-  const targetOffset = -(currentStationIndex * STATION_SPACING);
-
-  useGSAP(
-    () => {
-      if (!worldRef.current) return;
-
-      // Phase 1: animate with a simple ease (Phase 2 replaces with full controller)
-      gsap.to(worldRef.current, {
-        x: targetOffset,
-        duration: 1.8,
-        ease: "power2.inOut",
-      });
-    },
-    {
-      scope: worldRef,
-      dependencies: [targetOffset],
-    }
-  );
-
   return (
-    <>
-      {/* ── Environment backdrop ─────────────────────────── */}
+    /* ── Camera rig — whole scene scales / translates together ── */
+    <div
+      ref={cameraRef}
+      id="camera-rig"
+      style={{
+        position: "fixed",
+        inset: 0,
+        /* transformOrigin set by AnimationController at runtime.
+           Pre-declare it here so the first GSAP tween doesn't
+           cause a layout jump. */
+        transformOrigin: "50% 58%",
+      }}
+    >
+      {/* ── Environment backdrop ─────────────────────────────── */}
       <Environment state={currentStation.environment}>
 
-        {/* ── World pan container ──────────────────────── */}
+        {/* ── World pan container ──────────────────────────── */}
         <div
           ref={worldRef}
           id="world-pan"
@@ -78,12 +76,10 @@ export default function RailwayWorld() {
             width: `${TRACK_WORLD_WIDTH}px`,
             height: "42%",
             willChange: "transform",
-            // Initial x set to 0; GSAP takes over immediately
-            transform: "translateX(0px)",
           }}
           aria-hidden="true"
         >
-          {/* ── Ground grass strip above the track ─────── */}
+          {/* Ground grass strip above track */}
           <div
             style={{
               position: "absolute",
@@ -97,7 +93,7 @@ export default function RailwayWorld() {
             }}
           />
 
-          {/* ── Track ──────────────────────────────────── */}
+          {/* Track */}
           <div
             style={{
               position: "absolute",
@@ -109,7 +105,7 @@ export default function RailwayWorld() {
             <Track />
           </div>
 
-          {/* ── Station platforms ──────────────────────── */}
+          {/* Station platforms */}
           {STATIONS.map((station) => (
             <StationWrapper
               key={station.id}
@@ -120,15 +116,17 @@ export default function RailwayWorld() {
         </div>
       </Environment>
 
-      {/* ── Train — fixed in screen space ────────────────── */}
+      {/* ── Train — fixed in screen space, world moves behind ── */}
       <div
+        ref={trainRef}
         id="train-container"
         style={{
           position: "fixed",
           bottom: "calc(35% + 4px)",
           left: TRAIN_SCREEN_LEFT,
           zIndex: 10,
-          pointerEvents: "none",
+          /* Enable pointer events so the cabin window hitbox works */
+          pointerEvents: onWindowClick ? "auto" : "none",
           transform: "translateZ(0)",
         }}
         aria-label="Deepak Express locomotive"
@@ -139,8 +137,9 @@ export default function RailwayWorld() {
           wheelsRotating={trainState.wheelsRotating}
           headlightOn={trainState.headlightOn}
           scale={0.95}
+          onWindowClick={onWindowClick}
         />
       </div>
-    </>
+    </div>
   );
 }

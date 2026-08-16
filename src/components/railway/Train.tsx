@@ -14,6 +14,8 @@ export interface TrainProps {
   direction?: "right" | "left";
   scale?: number;
   className?: string;
+  /** Called when user clicks the cabin windows — triggers CabinView */
+  onWindowClick?: () => void;
 }
 
 export default function Train({
@@ -24,6 +26,7 @@ export default function Train({
   direction = "right",
   scale = 1,
   className,
+  onWindowClick,
 }: TrainProps) {
   const containerRef = useRef<SVGSVGElement>(null);
   const smokeRef = useRef<SVGGElement>(null);
@@ -107,8 +110,12 @@ export default function Train({
         overflow: "visible",
         display: "block",
       }}
-      aria-label="Deepak Express locomotive"
-      role="img"
+      aria-label={
+        onWindowClick
+          ? "Deepak Express locomotive — click windows to enter cabin view"
+          : "Deepak Express locomotive"
+      }
+      role={onWindowClick ? "button" : "img"}
     >
       <defs>
         {/* ── Body ── */}
@@ -425,6 +432,37 @@ export default function Train({
         fill="#1A1A1A" stroke="#4A5260" strokeWidth="1" />
       <rect x="342" y="112" width="10" height="5" rx="1"
         fill="#0A0A0A" stroke="#3A3A3A" strokeWidth="0.5" />
+
+      {/* ── Cabin window click hitbox ─────────────────────────── */}
+      {onWindowClick && (
+        <g>
+          <title>Enter cabin view</title>
+          {/* Subtle hover glow ring — visible around windows when hovering */}
+          <rect
+            x="216"
+            y="44"
+            width="96"
+            height="44"
+            rx="4"
+            fill="transparent"
+            stroke="rgba(244,196,48,0)"
+            strokeWidth="1.5"
+            style={{ cursor: "pointer", transition: "stroke 0.2s ease" }}
+            pointerEvents="all"
+            onClick={onWindowClick}
+            onMouseEnter={(e) => {
+              (e.currentTarget as SVGRectElement).setAttribute(
+                "stroke", "rgba(244,196,48,0.4)"
+              );
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as SVGRectElement).setAttribute(
+                "stroke", "rgba(244,196,48,0)"
+              );
+            }}
+          />
+        </g>
+      )}
     </svg>
   );
 }

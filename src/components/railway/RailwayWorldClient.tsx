@@ -1,46 +1,133 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 import RailwayWorld from "./RailwayWorld";
+import CabinView from "./CabinView";
 import { useJourneyStore } from "@/hooks/useJourneyState";
-import { STATIONS } from "@/lib/railway/stations";
+import { useTrainController } from "@/hooks/useTrainController";
+import { AnimationController } from "@/lib/railway/animationController";
+import { STATIONS, STATION_SPACING } from "@/lib/railway/stations";
 
 /**
- * Client shell that owns:
- *  - Journey phase initialisation (LOADING → IDLE)
- *  - Phase 1 navigation controls (NEXT STATION / PREV STATION)
- *  - Station overview strip at the top
- *  - Platform strip showing all platform names
+ * RailwayWorldClient — the phase-2 orchestration shell.
  *
- * Phase 2 will replace the nav controls with the full cinematic sequence.
+ * Owns:
+ *  - All DOM refs passed down to RailwayWorld
+ *  - Journey phase initialisation (LOADING → IDLE)
+ *  - Full cinematic departure sequence (via useTrainController)
+ *  - Instant-jump fallback for PREV / station-pill navigation
+ *  - Camera resets via AnimationController
+ *  - CabinView overlay toggle
+ *  - HUD: top station strip, bottom navigation controls
  */
 export default function RailwayWorldClient() {
+  /* ── Scene refs ───────────────────────────────────────────── */
+  const worldRef  = useRef<HTMLDivElement>(null);
+  const trainRef  = useRef<HTMLDivElement>(null);
+  const cameraRef = useRef<HTMLDivElement>(null);
+
+  /* ── Standalone animation controller (for external camera ops) */
+  const animCtrlRef = useRef(new AnimationController());
+
+  /* ── Train controller — owns all departure/arrival timelines ─ */
+  const { depart, isAnimating } = useTrainController(
+    worldRef,
+    trainRef,
+    cameraRef,
+  );
+
+  /* ── Zustand store ────────────────────────────────────────── */
   const {
     phase,
     currentStationIndex,
     setPhase,
-    advanceStation,
     jumpToStation,
     trainState,
   } = useJourneyStore();
 
-  /* ── Initialise journey on mount ─────────────────────────── */
+  /* ── Cabin-view overlay ───────────────────────────────────── */
+  const [cabinOpen, setCabinOpen] = useState(false);
+
+  /* ── Derived ──────────────────────────────────────────────── */
+  const currentStation = STATIONS[currentStationIndex];
+  const isFirst = currentStationIndex === 0;
+  const isLast  = currentStationIndex === STATIONS.length - 1;
+
+  /* ── Initialise journey ───────────────────────────────────── */
   useEffect(() => {
     if (phase === "LOADING") {
       setPhase("IDLE");
+      /* Ensure world-pan starts at x=0 without an animated transition */
+      if (worldRef.current) {
+        gsap.set(worldRef.current, { x: 0 });
+      }
     }
-  }, [phase, setPhase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const currentStation = STATIONS[currentStationIndex];
-  const isFirst = currentStationIndex === 0;
-  const isLast = currentStationIndex === STATIONS.length - 1;
+  /* ── Instant-jump effect ─────────────────────────────────────
+     When currentStationIndex changes via jumpToStation() / PREV,
+     the train controller is NOT running, so we animate the world
+     ourselves. If the controller IS running, it owns the world,
+     so we skip.
+  ─────────────────────────────────────────────────────────── */
+  const prevIdxRef = useRef(currentStationIndex);
+  useEffect(() => {
+    if (prevIdxRef.current === currentStationIndex) return;
+    prevIdxRef.current = currentStationIndex;
+    if (isAnimating) return; // controller owns this
+    if (!worldRef.current) return;
+
+    const targetX = -(currentStationIndex * STATION_SPACING);
+    gsap.to(worldRef.current, {
+      x: targetX,
+      duration: 1.4,
+      ease: "power2.inOut",
+    });
+  }, [currentStationIndex, isAnimating]);
+
+  /* ── Camera reset on external STOPPED ────────────────────────
+     If phase hits STOPPED while the controller is NOT running
+     (e.g. from jumpToStation), return the camera to tight.
+  ─────────────────────────────────────────────────────────── */
+  useEffect(() => {
+    if (phase === "STOPPED" && !isAnimating && cameraRef.current) {
+      animCtrlRef.current.transitionCamera(cameraRef.current, "tight");
+    }
+  }, [phase, isAnimating]);
+
+  /* ── Departure handler ────────────────────────────────────── */
+  const handleDepart = () => {
+    if (isAnimating || isLast) return;
+    depart(currentStationIndex + 1);
+  };
+
+  /* ── Keyboard shortcut: → or n → depart ──────────────────── */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight" || e.key === "n") handleDepart();
+      if (e.key === "Escape") setCabinOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAnimating, isLast, currentStationIndex]);
 
   return (
     <>
-      {/* ── Scene ─────────────────────────────────────────── */}
-      <RailwayWorld />
+      {/* ── Scene ───────────────────────────────────────────── */}
+      <RailwayWorld
+        worldRef={worldRef}
+        trainRef={trainRef}
+        cameraRef={cameraRef}
+        onWindowClick={() => setCabinOpen(true)}
+      />
 
-      {/* ── Platform overview strip ───────────────────────── */}
+      {/* ── Cabin view overlay ──────────────────────────────── */}
+      <CabinView isOpen={cabinOpen} onClose={() => setCabinOpen(false)} />
+
+      {/* ── Top HUD — platform overview strip ────────────────── */}
       <div
         role="navigation"
         aria-label="Journey stations"
@@ -103,12 +190,15 @@ export default function RailwayWorldClient() {
           }}
         >
           {STATIONS.map((station, i) => {
-            const isPast = i < currentStationIndex;
+            const isPast    = i < currentStationIndex;
             const isCurrent = i === currentStationIndex;
             return (
               <button
                 key={station.id}
-                onClick={() => jumpToStation(station.id)}
+                onClick={() => {
+                  if (!isAnimating) jumpToStation(station.id);
+                }}
+                disabled={isAnimating}
                 aria-label={`Go to ${station.displayName}`}
                 aria-current={isCurrent ? "true" : undefined}
                 style={{
@@ -121,7 +211,7 @@ export default function RailwayWorldClient() {
                   borderBottom: isCurrent
                     ? "2px solid #F4C430"
                     : "2px solid transparent",
-                  cursor: "pointer",
+                  cursor: isAnimating ? "not-allowed" : "pointer",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
@@ -129,9 +219,10 @@ export default function RailwayWorldClient() {
                   transition: "all 0.2s ease",
                   whiteSpace: "nowrap",
                   minWidth: "100px",
+                  opacity: isAnimating && !isCurrent ? 0.5 : 1,
                 }}
                 onMouseEnter={(e) => {
-                  if (!isCurrent) {
+                  if (!isCurrent && !isAnimating) {
                     e.currentTarget.style.background = "rgba(244,196,48,0.05)";
                   }
                 }}
@@ -168,7 +259,6 @@ export default function RailwayWorldClient() {
                 >
                   {station.displayName.toUpperCase()}
                 </span>
-                {/* Visited indicator */}
                 <div
                   style={{
                     width: "4px",
@@ -187,7 +277,7 @@ export default function RailwayWorldClient() {
           })}
         </div>
 
-        {/* Train status */}
+        {/* Train status readout */}
         <div
           style={{
             padding: "8px 16px",
@@ -205,14 +295,22 @@ export default function RailwayWorldClient() {
                 width: "6px",
                 height: "6px",
                 borderRadius: "50%",
-                background: "#2ECC71",
-                boxShadow: "0 0 6px #2ECC71",
+                background: isAnimating ? "#F4C430" : "#2ECC71",
+                boxShadow: isAnimating
+                  ? "0 0 6px #F4C430"
+                  : "0 0 6px #2ECC71",
+                transition: "background 0.3s, box-shadow 0.3s",
               }}
             />
             <span
-              style={{ fontSize: "8px", color: "#2ECC71", letterSpacing: "2px" }}
+              style={{
+                fontSize: "8px",
+                color: isAnimating ? "#F4C430" : "#2ECC71",
+                letterSpacing: "2px",
+                transition: "color 0.3s",
+              }}
             >
-              ON TIME
+              {isAnimating ? "EN ROUTE" : "ON TIME"}
             </span>
           </div>
           <span
@@ -223,7 +321,7 @@ export default function RailwayWorldClient() {
         </div>
       </div>
 
-      {/* ── Bottom navigation controls ────────────────────── */}
+      {/* ── Bottom navigation controls ─────────────────────────── */}
       <div
         style={{
           position: "fixed",
@@ -252,7 +350,9 @@ export default function RailwayWorldClient() {
               marginBottom: "3px",
             }}
           >
-            {currentStation.platformLabel.toUpperCase()}
+            {isAnimating
+              ? "NEXT STOP"
+              : currentStation.platformLabel.toUpperCase()}
           </div>
           <div
             style={{
@@ -278,20 +378,22 @@ export default function RailwayWorldClient() {
 
         {/* PREV button */}
         <button
-          disabled={isFirst}
-          onClick={() =>
-            jumpToStation(STATIONS[currentStationIndex - 1].id)
-          }
+          disabled={isFirst || isAnimating}
+          onClick={() => {
+            if (!isFirst && !isAnimating) {
+              jumpToStation(STATIONS[currentStationIndex - 1].id);
+            }
+          }}
           aria-label="Previous station"
           style={{
             padding: "8px 16px",
             background: "transparent",
             border: "1px solid rgba(244,196,48,0.25)",
             borderRadius: "2px",
-            color: isFirst ? "#2A3A2A" : "#F4C430",
+            color: isFirst || isAnimating ? "#2A3A2A" : "#F4C430",
             fontSize: "9px",
             letterSpacing: "2px",
-            cursor: isFirst ? "not-allowed" : "pointer",
+            cursor: isFirst || isAnimating ? "not-allowed" : "pointer",
             transition: "all 0.15s ease",
             fontFamily: "var(--font-mono)",
           }}
@@ -299,34 +401,84 @@ export default function RailwayWorldClient() {
           ← PREV
         </button>
 
-        {/* NEXT button */}
+        {/* NEXT / DEPART button */}
         <button
-          disabled={isLast}
-          onClick={advanceStation}
-          aria-label="Next station"
+          disabled={isLast || isAnimating}
+          onClick={handleDepart}
+          aria-label={isAnimating ? "Travelling" : "Depart to next station"}
           style={{
             padding: "8px 20px",
-            background: isLast ? "rgba(30,40,30,0.5)" : "#F4C430",
+            background:
+              isLast
+                ? "rgba(30,40,30,0.5)"
+                : isAnimating
+                ? "rgba(244,196,48,0.15)"
+                : "#F4C430",
             border: "1px solid",
-            borderColor: isLast ? "rgba(244,196,48,0.15)" : "#F4C430",
+            borderColor:
+              isLast
+                ? "rgba(244,196,48,0.15)"
+                : isAnimating
+                ? "rgba(244,196,48,0.3)"
+                : "#F4C430",
             borderRadius: "2px",
-            color: isLast ? "#2A3A2A" : "#0A0A0A",
+            color:
+              isLast || isAnimating ? "#5A6A3A" : "#0A0A0A",
             fontSize: "9px",
             letterSpacing: "3px",
             fontWeight: 700,
-            cursor: isLast ? "not-allowed" : "pointer",
-            transition: "all 0.15s ease",
+            cursor: isLast || isAnimating ? "not-allowed" : "pointer",
+            transition: "all 0.2s ease",
             fontFamily: "var(--font-mono)",
           }}
         >
-          {isLast ? "END OF LINE" : "NEXT STATION →"}
+          {isLast
+            ? "END OF LINE"
+            : isAnimating
+            ? "TRAVELLING..."
+            : "DEPART →"}
         </button>
       </div>
 
-      {/* ── Screen-reader accessible station content ─────── */}
+      {/* ── Cabin hint tooltip (shows briefly on IDLE at first station) */}
+      {phase === "IDLE" && currentStationIndex === 0 && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "80px",
+            left: "30%",
+            transform: "translateX(-20px)",
+            zIndex: 90,
+            background: "rgba(6,10,6,0.78)",
+            border: "1px solid rgba(244,196,48,0.2)",
+            borderRadius: "3px",
+            padding: "6px 12px",
+            fontFamily: "var(--font-mono)",
+            fontSize: "9px",
+            color: "rgba(244,196,48,0.6)",
+            letterSpacing: "2px",
+            pointerEvents: "none",
+            animation: "pulse-hint 2s ease-in-out infinite",
+          }}
+        >
+          CLICK WINDOWS → CABIN VIEW
+        </div>
+      )}
+
+      {/* ── Screen-reader live region ─────────────────────────── */}
       <div className="sr-only" aria-live="polite">
-        Currently at {currentStation.displayName}, {currentStation.platformLabel}.
+        {isAnimating
+          ? `Travelling to ${currentStation.displayName}`
+          : `At ${currentStation.displayName}, ${currentStation.platformLabel}.`}
       </div>
+
+      {/* ── Pulse keyframe for the cabin hint ─────────────────── */}
+      <style>{`
+        @keyframes pulse-hint {
+          0%, 100% { opacity: 0.6; }
+          50%       { opacity: 1.0; }
+        }
+      `}</style>
     </>
   );
 }
