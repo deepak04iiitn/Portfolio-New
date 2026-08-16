@@ -5,6 +5,7 @@ import gsap from "gsap";
 import RailwayWorld from "./RailwayWorld";
 import CabinView from "./CabinView";
 import BoardingScreen from "./BoardingScreen";
+import StationContentOverlay from "./StationContentOverlay";
 import AudioManager from "@/components/audio/AudioManager";
 import MuteToggle from "@/components/ui/MuteToggle";
 import { useJourneyStore } from "@/hooks/useJourneyState";
@@ -139,6 +140,9 @@ export default function RailwayWorldClient() {
 
       {/* ── Cabin view overlay ──────────────────────────────── */}
       <CabinView isOpen={cabinOpen} onClose={() => setCabinOpen(false)} />
+
+      {/* ── Station content panels (shown when STOPPED) ─────── */}
+      <StationContentOverlay />
 
       {/* ── Top HUD — platform overview strip ────────────────── */}
       <div
