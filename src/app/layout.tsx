@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Rajdhani, Oswald, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import DesktopGuard from "@/components/ui/DesktopGuard";
 import "./globals.css";
 
 const rajdhani = Rajdhani({
@@ -48,6 +49,7 @@ export default function RootLayout({
       className={`${rajdhani.variable} ${oswald.variable} ${jetbrainsMono.variable}`}
     >
       <body>
+        <DesktopGuard />
         {children}
         <Analytics />
       </body>

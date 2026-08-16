@@ -92,7 +92,7 @@ export default function StationMap({ isOpen, onClose }: StationMapProps) {
                 style={{
                   background: "transparent",
                   border: "none",
-                  color: "#3A4A3A",
+                  color: "#7A9A7A",
                   cursor: "pointer",
                   fontSize: 14,
                   padding: "4px 8px",
@@ -104,7 +104,7 @@ export default function StationMap({ isOpen, onClose }: StationMapProps) {
                   (e.currentTarget.style.color = "#F4C430")
                 }
                 onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "#3A4A3A")
+                  (e.currentTarget.style.color = "#7A9A7A")
                 }
               >
                 ✕
@@ -194,7 +194,7 @@ export default function StationMap({ isOpen, onClose }: StationMapProps) {
                             ? "#F4C430"
                             : isPast
                               ? "#A8C8A8"
-                              : "#3A4A3A",
+                              : "#7A9A7A",
                           letterSpacing: "1.5px",
                           textAlign: "center",
                           maxWidth: 72,
@@ -241,7 +241,7 @@ export default function StationMap({ isOpen, onClose }: StationMapProps) {
                       }}
                     />
                     <span
-                      style={{ fontSize: 6, color: "#3A4A3A", letterSpacing: "2px" }}
+                      style={{ fontSize: 6, color: "#7A9A7A", letterSpacing: "2px" }}
                     >
                       {label}
                     </span>
@@ -249,7 +249,7 @@ export default function StationMap({ isOpen, onClose }: StationMapProps) {
                 ))}
               </div>
               <span
-                style={{ fontSize: 7, color: "#2A3A2A", letterSpacing: "2px" }}
+                style={{ fontSize: 7, color: "#7A9A7A", letterSpacing: "2px" }}
               >
                 CLICK TO JUMP · ESC TO CLOSE
               </span>

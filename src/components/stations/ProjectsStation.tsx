@@ -59,30 +59,92 @@ function makeProjectSlide(idx: number): React.ComponentType {
           </span>
         </div>
 
-        {/* ── Project name + tagline ── */}
-        <div
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(22px, 3.5vw, 36px)",
-            fontWeight: 700,
-            color: "#F5F0E8",
-            letterSpacing: "3px",
-            lineHeight: 1,
-            marginBottom: 6,
-          }}
-        >
-          {project.name.toUpperCase()}
-        </div>
-        <div
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: 10,
-            color: `${ACCENT}99`,
-            letterSpacing: "2px",
-            marginBottom: 18,
-          }}
-        >
-          {project.tagline}
+        {/* ── Project name + tagline + links ── */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 18 }}>
+          {/* Left: name + tagline */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "clamp(22px, 3.5vw, 36px)",
+                fontWeight: 700,
+                color: "#F5F0E8",
+                letterSpacing: "3px",
+                lineHeight: 1,
+                marginBottom: 6,
+              }}
+            >
+              {project.name.toUpperCase()}
+            </div>
+            <div
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: 10,
+                color: `${ACCENT}99`,
+                letterSpacing: "2px",
+              }}
+            >
+              {project.tagline}
+            </div>
+          </div>
+
+          {/* Right: stacked link buttons */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 7, flexShrink: 0 }}>
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  padding: "7px 16px",
+                  background: ACCENT,
+                  color: "#0A0A0A",
+                  fontFamily: "var(--font-mono)",
+                  fontSize: 8,
+                  letterSpacing: "2.5px",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  borderRadius: 2,
+                  fontWeight: 700,
+                  whiteSpace: "nowrap",
+                  transition: "opacity 0.15s ease",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.84"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+              >
+                LIVE DEMO ↗
+              </a>
+            )}
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: "7px 16px",
+                background: "transparent",
+                border: `1px solid ${ACCENT}44`,
+                color: ACCENT,
+                fontFamily: "var(--font-mono)",
+                fontSize: 8,
+                letterSpacing: "2.5px",
+                textAlign: "center",
+                textDecoration: "none",
+                borderRadius: 2,
+                whiteSpace: "nowrap",
+                transition: "all 0.15s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = `${ACCENT}14`;
+                e.currentTarget.style.borderColor = `${ACCENT}77`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.borderColor = `${ACCENT}44`;
+              }}
+            >
+              SOURCE CODE ↗
+            </a>
+          </div>
         </div>
 
         {/* ── Accent divider ── */}
@@ -142,7 +204,7 @@ function makeProjectSlide(idx: number): React.ComponentType {
         </motion.div>
 
         {/* ── Tech stack ── */}
-        <div style={{ marginBottom: 22 }}>
+        <div style={{ marginBottom: 0 }}>
           <div
             style={{
               fontFamily: "var(--font-mono)",
@@ -181,63 +243,6 @@ function makeProjectSlide(idx: number): React.ComponentType {
           </motion.div>
         </div>
 
-        {/* ── Links ── */}
-        <div style={{ display: "flex", gap: 10 }}>
-          {project.liveUrl && (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                flex: 1,
-                padding: "11px 16px",
-                background: ACCENT,
-                color: "#0A0A0A",
-                fontFamily: "var(--font-mono)",
-                fontSize: 9,
-                letterSpacing: "3px",
-                textAlign: "center",
-                textDecoration: "none",
-                borderRadius: 2,
-                fontWeight: 700,
-                transition: "opacity 0.15s ease",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.84"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
-            >
-              LIVE DEMO ↗
-            </a>
-          )}
-          <a
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              flex: project.liveUrl ? 1 : 2,
-              padding: "11px 16px",
-              background: "transparent",
-              border: `1px solid ${ACCENT}38`,
-              color: ACCENT,
-              fontFamily: "var(--font-mono)",
-              fontSize: 9,
-              letterSpacing: "3px",
-              textAlign: "center",
-              textDecoration: "none",
-              borderRadius: 2,
-              transition: "all 0.15s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = `${ACCENT}12`;
-              e.currentTarget.style.borderColor = `${ACCENT}66`;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.borderColor = `${ACCENT}38`;
-            }}
-          >
-            SOURCE CODE ↗
-          </a>
-        </div>
       </div>
     );
   };

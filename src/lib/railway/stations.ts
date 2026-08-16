@@ -109,10 +109,29 @@ export const STATIONS: StationConfig[] = [
     content: { type: "skills", data: {} },
   },
   {
-    id: "contact",
+    id: "socials",
     order: 5,
-    displayName: "Destination Station",
+    displayName: "Resume & Socials Junction",
     platformLabel: "Platform 06",
+    environment: {
+      timeOfDay: "night",
+      skyTop: "#050810",
+      skyBottom: "#0A1020",
+      horizonGlow: "rgba(60, 100, 200, 0.25)",
+      groundColor: "#141A0C",
+      ambientIntensity: 0.2,
+      cloudOpacity: 0.08,
+      fogOpacity: 0.18,
+      windowGlow: 1,
+      headlightIntensity: 1,
+    },
+    content: { type: "socials", data: {} },
+  },
+  {
+    id: "contact",
+    order: 6,
+    displayName: "Contact Me Junction",
+    platformLabel: "Platform 07",
     environment: {
       timeOfDay: "sunrise",
       skyTop: "#1A3A6E",
@@ -152,25 +171,43 @@ export const EDUCATION_DATA: EducationData = {
   cgpa: "8.43",
   highlights: [
     "Data Structures & Algorithms",
-    "Computer Networks",
-    "Operating Systems",
-    "Database Management",
-    "Embedded Systems",
+    "Object Oriented Programming (OOPs)",
+    "Introduction to Web Development",
   ],
 };
 
 export const EXPERIENCE_DATA: ExperienceEntry[] = [
   {
     company: "Ashwam",
-    role: "Software Developer",
-    period: "2026 → Present",
+    companyFull: "Ashwam Co.",
+    role: "Software Engineer — I",
+    period: "Jan 2026 → Present",
     location: "Remote",
+    stack: ["Next.js", "TypeScript", "MongoDB", "Firebase", "Flutter", "Hive", "Python", "Appium", "BrowserStack", "SigNoz"],
+    roleProgression: [
+      { role: "Software Engineer Intern", period: "Jan 2026 – Jun 2026", tag: "INTERNSHIP" },
+      { role: "Software Engineer — I", period: "Jul 2026 – Present", tag: "PPO → FULL-TIME" },
+    ],
     responsibilities: [
-      "Building scalable backend services with Node.js and TypeScript",
-      "Frontend development with React, Next.js, and Tailwind CSS",
-      "System design, architecture decisions, and code reviews",
+      "Built the pre-launch marketing website from scratch using Next.js, TypeScript, MongoDB, and Firebase; integrated Google Sheets via form submission to capture and manage beta-user sign-ups seamlessly.",
+      "Developed multiple mobile app screens (Onboarding, Settings, Feedback Capture) from scratch using Flutter, Firebase, MongoDB, and Hive; also engineered an in-app version upgrader to streamline OTA updates.",
+      "Wrote UI automation test cases and cross-device automation scripts using Python, Appium, and BrowserStack, ensuring broad device coverage and regression confidence for the mobile app.",
+      "Utilised SigNoz for application observability — monitored live user flows, debugged issues using distributed traces, and analysed custom analytics events to maintain real-time visibility into app performance.",
     ],
     status: "ACTIVE",
+  },
+  {
+    company: "ProStruct Engineering",
+    role: "Software Engineer Intern",
+    period: "May 2025 → Nov 2025",
+    location: "Remote",
+    stack: ["React.js", "Node.js", "Express.js", "MongoDB", "HubSpot CRM", "Google Maps API", "SEMrush", "SERP API"],
+    responsibilities: [
+      "Built full-stack features using React.js, Node.js, Express.js, and MongoDB; developed HubSpot CRM automation integrations that significantly reduced manual customer-management overhead.",
+      "Integrated Google Maps and Google Sheets into the platform; engineered automated email and Slack alert pipelines triggered by real-time business conditions to keep the team proactively informed.",
+      "Led SEO optimization by analysing competitor data via SEMrush and SERP API, applying structured on-page and technical improvements that measurably boosted organic discoverability.",
+    ],
+    status: "COMPLETED",
   },
 ];
 
@@ -230,6 +267,34 @@ export const PROJECTS_DATA: ProjectEntry[] = [
     githubUrl: "https://github.com/deepak04iiitn/Engazium",
     status: "LIVE",
   },
+  {
+    id: "routezy",
+    name: "Routezy",
+    tagline: "Smart Travel Planning Mobile App",
+    highlights: [
+      "Generates optimized day itineraries from a GPS or chosen start point, available time window (hours to multi-day), and nearby attractions — accounting for opening hours and visit durations; multi-day trips cluster nearby sights to keep each day compact.",
+      "Orders stops to minimize backtracking and displays the plan on a live map with in-trip progress (mark visited, skip, recalculate); surfaces budget-aware restaurant suggestions plus nearby ATMs and washrooms mid-route.",
+      "Save, like, and manage trips through their full lifecycle; browse explore/latest/recent feeds and trending attractions; private notes, community tips/reviews, and shareable itineraries for companions.",
+      "Production-ready backend — email/password + Google OAuth, profiles, session tracking, Play Store–ready account deletion, JWT auth, layered rate limiting, and API-usage caching/guards.",
+    ],
+    stack: ["Expo SDK 54", "React Native", "Expo Router", "Zustand", "Node.js", "Express", "MongoDB", "Firebase", "JWT", "Google Maps API"],
+    githubUrl: "https://github.com/deepak04iiitn/Routezy",
+    status: "LIVE",
+  },
+  {
+    id: "foldercraft",
+    name: "foldercraft",
+    tagline: "CLI Tool — Project Folder Structure Generator",
+    highlights: [
+      "npm CLI that scaffolds project folder structures from built-in framework templates (react, node, next) or custom JSON configs; extend mode merges both so teams enforce a consistent layout in seconds.",
+      "Safe write strategies (default fail / --merge / --overwrite), dry-run preview, and an interactive wizard guide first-time users; auto README generation creates documentation stubs for every generated directory.",
+      "Profiles let you save and reuse full setups; fine-grained flags (--add-dir, --add-file, --set-file, --remove) allow one-command customization; root filesystem protection and strict path validation prevent accidents.",
+    ],
+    stack: ["Node.js", "JavaScript", "npm CLI"],
+    liveUrl: "https://www.npmjs.com/package/foldercraft",
+    githubUrl: "https://github.com/deepak04iiitn/foldercraft",
+    status: "LIVE",
+  },
 ];
 
 export const SKILLS_DATA: SkillsData = {
@@ -241,8 +306,12 @@ export const SKILLS_DATA: SkillsData = {
 };
 
 export const CONTACT_DATA: ContactData = {
-  email: "deepak@example.com",
-  github: "https://github.com/deepak",
-  linkedin: "https://linkedin.com/in/deepak",
-  resumeUrl: "/resume-deepak.pdf",
+  name: "Deepak Kumar Yadav",
+  email: "dky422003@gmail.com",
+  phone: "+91 9766599536",
+  github: "https://github.com/deepak04iiitn",
+  linkedin: "https://www.linkedin.com/in/deepak-kumar-yadav-a0653b248/",
+  gfg: "https://www.geeksforgeeks.org/profile/deepak04_iiitn",
+  leetcode: "https://leetcode.com/u/deepak04_iiitn/",
+  resumeUrl: "https://drive.google.com/file/d/1L0UccfHKK1v46dN3y3HllrnxuWzHCCUi/view?usp=drive_link",
 };

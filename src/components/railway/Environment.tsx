@@ -416,6 +416,53 @@ function BuildingLayer({ timeOfDay }: { timeOfDay: string }) {
         </>
       )}
 
+      {/* ── Signal towers — Socials station ── */}
+      {stationType === "socials" && (
+        <>
+          {/* Left antenna tower */}
+          <rect x="140" y="100" width="6"  height="220" fill="#0E0E16" />
+          <rect x="134" y="100" width="18" height="4"   fill="#0E0E16" />
+          {/* cross-braces */}
+          <line x1="140" y1="140" x2="134" y2="160" stroke="#14141E" strokeWidth="2" />
+          <line x1="146" y1="140" x2="152" y2="160" stroke="#14141E" strokeWidth="2" />
+          <line x1="140" y1="190" x2="134" y2="210" stroke="#14141E" strokeWidth="2" />
+          <line x1="146" y1="190" x2="152" y2="210" stroke="#14141E" strokeWidth="2" />
+          {/* blinking light */}
+          {windowOpacity > 0 && (
+            <circle cx="143" cy="96" r="3" fill="#60A5FA" opacity={windowOpacity * 0.9} />
+          )}
+          {/* Dish */}
+          <path d="M 160,180 Q 185,165 210,180" fill="none" stroke="#0E0E16" strokeWidth="5" />
+          <line x1="185" y1="172" x2="185" y2="195" stroke="#0E0E16" strokeWidth="3" />
+
+          {/* Right tall tower */}
+          <rect x="820" y="60"  width="8"  height="260" fill="#0A0A12" />
+          <rect x="812" y="60"  width="24" height="5"   fill="#0A0A12" />
+          <line x1="820" y1="110" x2="812" y2="135" stroke="#111118" strokeWidth="2" />
+          <line x1="828" y1="110" x2="836" y2="135" stroke="#111118" strokeWidth="2" />
+          <line x1="820" y1="170" x2="812" y2="195" stroke="#111118" strokeWidth="2" />
+          <line x1="828" y1="170" x2="836" y2="195" stroke="#111118" strokeWidth="2" />
+          <line x1="820" y1="230" x2="812" y2="255" stroke="#111118" strokeWidth="2" />
+          <line x1="828" y1="230" x2="836" y2="255" stroke="#111118" strokeWidth="2" />
+          {windowOpacity > 0 && (
+            <circle cx="824" cy="56" r="4" fill="#60A5FA" opacity={windowOpacity * 0.85} />
+          )}
+          {/* Satellite dish right */}
+          <path d="M 855,200 Q 878,183 900,200" fill="none" stroke="#0A0A12" strokeWidth="5" />
+          <line x1="877" y1="190" x2="877" y2="215" stroke="#0A0A12" strokeWidth="3" />
+
+          {/* Faint signal ripples (night only) */}
+          {windowOpacity > 0 && (
+            <>
+              <circle cx="143" cy="96" r="10" fill="none" stroke="#60A5FA" strokeWidth="1" opacity={windowOpacity * 0.15} />
+              <circle cx="143" cy="96" r="18" fill="none" stroke="#60A5FA" strokeWidth="1" opacity={windowOpacity * 0.08} />
+              <circle cx="824" cy="56" r="12" fill="none" stroke="#60A5FA" strokeWidth="1" opacity={windowOpacity * 0.15} />
+              <circle cx="824" cy="56" r="22" fill="none" stroke="#60A5FA" strokeWidth="1" opacity={windowOpacity * 0.07} />
+            </>
+          )}
+        </>
+      )}
+
       {/* ── Sunset coast — Contact / final station ── */}
       {stationType === "contact" && (
         <>

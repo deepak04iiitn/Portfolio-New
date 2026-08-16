@@ -33,7 +33,8 @@ export default function Train({
   const wheel1Ref = useRef<SVGGElement>(null);
   const wheel2Ref = useRef<SVGGElement>(null);
   const wheel3Ref = useRef<SVGGElement>(null);
-  const wheelSmallRef = useRef<SVGGElement>(null);
+  const wheelSmallRef    = useRef<SVGGElement>(null);
+  const wheelTrailingRef = useRef<SVGGElement>(null);
 
   /* ── Wheel rotation ───────────────────────────────────────── */
   /*
@@ -52,10 +53,11 @@ export default function Train({
   useGSAP(
     () => {
       const wheelData = [
-        { ref: wheel1Ref,    svgOrigin: "80 133"  },
-        { ref: wheel2Ref,    svgOrigin: "140 133" },
-        { ref: wheel3Ref,    svgOrigin: "200 133" },
-        { ref: wheelSmallRef, svgOrigin: "38 133" },
+        { ref: wheel1Ref,        svgOrigin: "104 133" },
+        { ref: wheel2Ref,        svgOrigin: "169 133" },
+        { ref: wheel3Ref,        svgOrigin: "234 133" },
+        { ref: wheelSmallRef,    svgOrigin: "38 133"  },
+        { ref: wheelTrailingRef, svgOrigin: "300 133" },
       ];
 
       if (wheelsRotating) {
@@ -368,55 +370,52 @@ export default function Train({
           LARGE DRIVE WHEELS (×3)
       ════════════════════════════════════════════════════════ */}
 
-      {/* Wheel 1 — front drive */}
+      {/* Wheel 1 — drive (cx=104) */}
       <g ref={wheel1Ref}>
-        <circle cx="80" cy="133" r="23" fill="url(#wheelGrad)" />
-        <circle cx="80" cy="133" r="23" fill="none" stroke="#404040" strokeWidth="1.5" />
-        {/* Spokes */}
-        <line x1="80" y1="110" x2="80" y2="156" stroke="#5C6370" strokeWidth="2.5" />
-        <line x1="57" y1="133" x2="103" y2="133" stroke="#5C6370" strokeWidth="2.5" />
-        <line x1="63" y1="116" x2="97" y2="150" stroke="#5C6370" strokeWidth="2" />
-        <line x1="97" y1="116" x2="63" y2="150" stroke="#5C6370" strokeWidth="2" />
-        <line x1="64" y1="147" x2="96" y2="119" stroke="#4A5260" strokeWidth="1.5" />
-        <line x1="64" y1="119" x2="96" y2="147" stroke="#4A5260" strokeWidth="1.5" />
-        {/* Hub */}
-        <circle cx="80" cy="133" r="7" fill="url(#hubGrad)" />
-        <circle cx="80" cy="133" r="4" fill="#3A3A3A" />
-        <circle cx="80" cy="133" r="2" fill="#5C6370" />
-        {/* Tyre highlight */}
-        <path d="M 62,116 A 23,23 0 0,1 98,116" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
+        <circle cx="104" cy="133" r="23" fill="url(#wheelGrad)" />
+        <circle cx="104" cy="133" r="23" fill="none" stroke="#404040" strokeWidth="1.5" />
+        <line x1="104" y1="110" x2="104" y2="156" stroke="#5C6370" strokeWidth="2.5" />
+        <line x1="81"  y1="133" x2="127" y2="133" stroke="#5C6370" strokeWidth="2.5" />
+        <line x1="87"  y1="116" x2="121" y2="150" stroke="#5C6370" strokeWidth="2" />
+        <line x1="121" y1="116" x2="87"  y2="150" stroke="#5C6370" strokeWidth="2" />
+        <line x1="88"  y1="147" x2="120" y2="119" stroke="#4A5260" strokeWidth="1.5" />
+        <line x1="88"  y1="119" x2="120" y2="147" stroke="#4A5260" strokeWidth="1.5" />
+        <circle cx="104" cy="133" r="7" fill="url(#hubGrad)" />
+        <circle cx="104" cy="133" r="4" fill="#3A3A3A" />
+        <circle cx="104" cy="133" r="2" fill="#5C6370" />
+        <path d="M 86,116 A 23,23 0 0,1 122,116" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
       </g>
 
-      {/* Wheel 2 — middle drive */}
+      {/* Wheel 2 — drive (cx=169) */}
       <g ref={wheel2Ref}>
-        <circle cx="140" cy="133" r="23" fill="url(#wheelGrad)" />
-        <circle cx="140" cy="133" r="23" fill="none" stroke="#404040" strokeWidth="1.5" />
-        <line x1="140" y1="110" x2="140" y2="156" stroke="#5C6370" strokeWidth="2.5" />
-        <line x1="117" y1="133" x2="163" y2="133" stroke="#5C6370" strokeWidth="2.5" />
-        <line x1="123" y1="116" x2="157" y2="150" stroke="#5C6370" strokeWidth="2" />
-        <line x1="157" y1="116" x2="123" y2="150" stroke="#5C6370" strokeWidth="2" />
-        <line x1="124" y1="147" x2="156" y2="119" stroke="#4A5260" strokeWidth="1.5" />
-        <line x1="124" y1="119" x2="156" y2="147" stroke="#4A5260" strokeWidth="1.5" />
-        <circle cx="140" cy="133" r="7" fill="url(#hubGrad)" />
-        <circle cx="140" cy="133" r="4" fill="#3A3A3A" />
-        <circle cx="140" cy="133" r="2" fill="#5C6370" />
-        <path d="M 122,116 A 23,23 0 0,1 158,116" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
+        <circle cx="169" cy="133" r="23" fill="url(#wheelGrad)" />
+        <circle cx="169" cy="133" r="23" fill="none" stroke="#404040" strokeWidth="1.5" />
+        <line x1="169" y1="110" x2="169" y2="156" stroke="#5C6370" strokeWidth="2.5" />
+        <line x1="146" y1="133" x2="192" y2="133" stroke="#5C6370" strokeWidth="2.5" />
+        <line x1="152" y1="116" x2="186" y2="150" stroke="#5C6370" strokeWidth="2" />
+        <line x1="186" y1="116" x2="152" y2="150" stroke="#5C6370" strokeWidth="2" />
+        <line x1="153" y1="147" x2="185" y2="119" stroke="#4A5260" strokeWidth="1.5" />
+        <line x1="153" y1="119" x2="185" y2="147" stroke="#4A5260" strokeWidth="1.5" />
+        <circle cx="169" cy="133" r="7" fill="url(#hubGrad)" />
+        <circle cx="169" cy="133" r="4" fill="#3A3A3A" />
+        <circle cx="169" cy="133" r="2" fill="#5C6370" />
+        <path d="M 151,116 A 23,23 0 0,1 187,116" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
       </g>
 
-      {/* Wheel 3 — rear drive */}
+      {/* Wheel 3 — drive (cx=234) */}
       <g ref={wheel3Ref}>
-        <circle cx="200" cy="133" r="23" fill="url(#wheelGrad)" />
-        <circle cx="200" cy="133" r="23" fill="none" stroke="#404040" strokeWidth="1.5" />
-        <line x1="200" y1="110" x2="200" y2="156" stroke="#5C6370" strokeWidth="2.5" />
-        <line x1="177" y1="133" x2="223" y2="133" stroke="#5C6370" strokeWidth="2.5" />
-        <line x1="183" y1="116" x2="217" y2="150" stroke="#5C6370" strokeWidth="2" />
-        <line x1="217" y1="116" x2="183" y2="150" stroke="#5C6370" strokeWidth="2" />
-        <line x1="184" y1="147" x2="216" y2="119" stroke="#4A5260" strokeWidth="1.5" />
-        <line x1="184" y1="119" x2="216" y2="147" stroke="#4A5260" strokeWidth="1.5" />
-        <circle cx="200" cy="133" r="7" fill="url(#hubGrad)" />
-        <circle cx="200" cy="133" r="4" fill="#3A3A3A" />
-        <circle cx="200" cy="133" r="2" fill="#5C6370" />
-        <path d="M 182,116 A 23,23 0 0,1 218,116" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
+        <circle cx="234" cy="133" r="23" fill="url(#wheelGrad)" />
+        <circle cx="234" cy="133" r="23" fill="none" stroke="#404040" strokeWidth="1.5" />
+        <line x1="234" y1="110" x2="234" y2="156" stroke="#5C6370" strokeWidth="2.5" />
+        <line x1="211" y1="133" x2="257" y2="133" stroke="#5C6370" strokeWidth="2.5" />
+        <line x1="217" y1="116" x2="251" y2="150" stroke="#5C6370" strokeWidth="2" />
+        <line x1="251" y1="116" x2="217" y2="150" stroke="#5C6370" strokeWidth="2" />
+        <line x1="218" y1="147" x2="250" y2="119" stroke="#4A5260" strokeWidth="1.5" />
+        <line x1="218" y1="119" x2="250" y2="147" stroke="#4A5260" strokeWidth="1.5" />
+        <circle cx="234" cy="133" r="7" fill="url(#hubGrad)" />
+        <circle cx="234" cy="133" r="4" fill="#3A3A3A" />
+        <circle cx="234" cy="133" r="2" fill="#5C6370" />
+        <path d="M 216,116 A 23,23 0 0,1 252,116" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
       </g>
 
       {/* ═══════════════════════════════════════════════════════
@@ -436,12 +435,16 @@ export default function Train({
       {/* ═══════════════════════════════════════════════════════
           REAR TRAILING WHEEL
       ════════════════════════════════════════════════════════ */}
-      <circle cx="300" cy="133" r="14" fill="url(#wheelGrad)" />
-      <circle cx="300" cy="133" r="14" fill="none" stroke="#404040" strokeWidth="1.2" />
-      <line x1="300" y1="119" x2="300" y2="147" stroke="#5C6370" strokeWidth="2" />
-      <line x1="286" y1="133" x2="314" y2="133" stroke="#5C6370" strokeWidth="2" />
-      <circle cx="300" cy="133" r="5" fill="url(#hubGrad)" />
-      <circle cx="300" cy="133" r="2.5" fill="#3A3A3A" />
+      <g ref={wheelTrailingRef}>
+        <circle cx="300" cy="133" r="14" fill="url(#wheelGrad)" />
+        <circle cx="300" cy="133" r="14" fill="none" stroke="#404040" strokeWidth="1.2" />
+        <line x1="300" y1="119" x2="300" y2="147" stroke="#5C6370" strokeWidth="2" />
+        <line x1="286" y1="133" x2="314" y2="133" stroke="#5C6370" strokeWidth="2" />
+        <line x1="290" y1="123" x2="310" y2="143" stroke="#4A5260" strokeWidth="1.5" />
+        <line x1="310" y1="123" x2="290" y2="143" stroke="#4A5260" strokeWidth="1.5" />
+        <circle cx="300" cy="133" r="5" fill="url(#hubGrad)" />
+        <circle cx="300" cy="133" r="2.5" fill="#3A3A3A" />
+      </g>
 
       {/* ═══════════════════════════════════════════════════════
           COUPLER (rear)

@@ -18,13 +18,13 @@ const ROWS: [string, string][] = [
 /**
  * Ticket — floating railway ticket widget.
  * Slides up from the bottom-right on first boarding, dismissed on click.
- * Auto-dismisses after 10 seconds.
+ * Auto-dismisses after 5 seconds.
  */
 export default function Ticket({ isVisible, onDismiss }: TicketProps) {
-  /* Auto-dismiss after 10 seconds */
+  /* Auto-dismiss after 5 seconds */
   useEffect(() => {
     if (!isVisible) return;
-    const t = setTimeout(onDismiss, 10_000);
+    const t = setTimeout(onDismiss, 5_000);
     return () => clearTimeout(t);
   }, [isVisible, onDismiss]);
 

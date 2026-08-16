@@ -150,13 +150,11 @@ export default function RailwayWorld({
           onWindowClick={onWindowClick}
         />
 
-        {/* Smoke particles — origin aligned with SVG chimney at x≈91,y≈17
-            (SVG coords 96×18 × scale 0.95). Canvas is 150×180px with
-            originY=155 so its bottom sits just above the funnel tip. */}
+        {/* Smoke particles — chimney SVG center x=95, scaled ×0.95 → ~90px */}
         <ParticleSystem
           active={trainState.smokeActive}
           type="smoke"
-          originX={43}
+          originX={90}
           originY={155}
           width={150}
           height={180}

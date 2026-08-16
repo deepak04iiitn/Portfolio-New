@@ -16,6 +16,7 @@ export type StationId =
   | "experience"
   | "projects"
   | "skills"
+  | "socials"
   | "contact";
 
 export type TimeOfDay = "day" | "evening" | "sunset" | "night" | "sunrise";
@@ -26,6 +27,7 @@ export type StationContentType =
   | "experience"
   | "projects"
   | "skills"
+  | "socials"
   | "contact";
 
 export interface EnvironmentState {
@@ -97,13 +99,22 @@ export interface EducationData {
   highlights: string[];
 }
 
+export interface RoleStep {
+  role: string;
+  period: string;
+  tag?: string;
+}
+
 export interface ExperienceEntry {
   company: string;
+  companyFull?: string;
   role: string;
   period: string;
   location: string;
+  stack: string[];
   responsibilities: string[];
   status: "ACTIVE" | "COMPLETED";
+  roleProgression?: RoleStep[];
 }
 
 export interface ProjectEntry {
@@ -126,8 +137,12 @@ export interface SkillsData {
 }
 
 export interface ContactData {
+  name: string;
   email: string;
+  phone: string;
   github: string;
   linkedin: string;
+  gfg: string;
+  leetcode: string;
   resumeUrl: string;
 }

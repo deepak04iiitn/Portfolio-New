@@ -11,6 +11,7 @@ import { SLIDES as ExperienceSlides, SLIDE_LABELS as ExperienceLabels } from "@/
 import { SLIDES as ProjectsSlides,   SLIDE_LABELS as ProjectsLabels   } from "@/components/stations/ProjectsStation";
 import { SLIDES as SkillsSlides,     SLIDE_LABELS as SkillsLabels     } from "@/components/stations/SkillsStation";
 import { SLIDES as ContactSlides,    SLIDE_LABELS as ContactLabels    } from "@/components/stations/ContactStation";
+import { SLIDES as SocialsSlides,    SLIDE_LABELS as SocialsLabels    } from "@/components/stations/SocialsStation";
 import type { StationId } from "@/lib/railway/types";
 
 const STATION_SLIDES: Record<StationId, { slides: React.ComponentType[]; labels: string[] }> = {
@@ -19,6 +20,7 @@ const STATION_SLIDES: Record<StationId, { slides: React.ComponentType[]; labels:
   experience: { slides: ExperienceSlides, labels: ExperienceLabels },
   projects:   { slides: ProjectsSlides,   labels: ProjectsLabels   },
   skills:     { slides: SkillsSlides,     labels: SkillsLabels     },
+  socials:    { slides: SocialsSlides,    labels: SocialsLabels    },
   contact:    { slides: ContactSlides,    labels: ContactLabels    },
 };
 

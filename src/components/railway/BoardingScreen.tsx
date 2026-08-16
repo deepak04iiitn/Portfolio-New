@@ -294,7 +294,7 @@ export default function BoardingScreen() {
                   style={{
                     fontFamily: "var(--font-mono)",
                     fontSize: 9,
-                    color: "#3A4A3A",
+                    color: "#A8C8A8",
                     letterSpacing: "3px",
                   }}
                 >
@@ -357,8 +357,8 @@ export default function BoardingScreen() {
               </div>
               <div
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
+                  display: "flex",
+                  flexWrap: "nowrap",
                 }}
               >
                 {STATIONS.filter((s) => s.id !== "welcome").map((station) => (
@@ -366,17 +366,19 @@ export default function BoardingScreen() {
                     key={station.id}
                     onClick={() => handleJump(station.id as StationId)}
                     style={{
-                      padding: "12px 8px",
+                      flex: 1,
+                      padding: "12px 4px",
                       background: "transparent",
                       border: "none",
                       borderRight: "1px solid rgba(244,196,48,0.08)",
                       color: "#6B7280",
                       fontFamily: "var(--font-mono)",
-                      fontSize: 8,
-                      letterSpacing: "2px",
+                      fontSize: 7,
+                      letterSpacing: "1.5px",
                       cursor: "pointer",
                       transition: "all 0.18s ease",
                       textTransform: "uppercase",
+                      whiteSpace: "nowrap",
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.color = "#F4C430";
